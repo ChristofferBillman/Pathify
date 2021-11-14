@@ -5,7 +5,6 @@ import Debug from './Debug'
 /*
  * TODO: * Write TSDoc.
  * 		 * Make grid pannable.
- * 		 * Compartmetalize code and structure into fewer, more abstract components
  * 		   Define data structure for storing 'maps'. Add 'state' to Square.
  * NOTE: * Squares are inserted into array in the order they are seen in the grid. Gives easy access to any square without search, write findSquare(), given the coordinates.
  */
@@ -14,16 +13,17 @@ module Main {
 	let ctx: CanvasRenderingContext2D;
 	let canvas: HTMLCanvasElement;
 
-	let squares: Square[]= [];
+	let squares: Square[] = [];
 
 	let squareSize: number = 50;
 	let width!: number;
 	let height!: number;
 
-	let ui: UI;
-
 	window.onresize = onResize;
 
+	/**
+	 * Inits the canvas.
+	 */
 	export function init(){
 		canvas = document.getElementsByTagName('canvas')[0]
 
@@ -34,12 +34,17 @@ module Main {
 		ctx = canvas.getContext('2d')!;
 
 		Input.init(canvas)
-		ui = new UI();
+
+		canvas.addEventListener('click', () =>{
+			UI.UIObjects.forEach(UIObject =>{
+				UIObject.onclick();
+			})
+		})
 
 		setCanvasSize()
 		squares = Square.setSquares(width,height,squareSize,5)
-		loop()
 
+		loop()
 	}
 	/**
 	 * The game loop.
@@ -56,14 +61,13 @@ module Main {
 	function draw(){
 		ctx.fillStyle = '#f7f7f7';
 		ctx.fillRect(0,0,width,height);
-
 		ctx.fillStyle = '#ffffff';
 
 		squares.forEach(square =>{
-			square.logic(Input.getMouseDown(),Input.getMousePos())
+			square.logic(Input.getMouseDown(),Input.getMousePos(),UI.UIObjects.get('eraseButton')!.pressed)
 			square.draw(ctx);
 		})
-		ui.draw(width,height,ctx);
+		UI.draw(width,height,ctx);
 		Debug.draw(width, squares.length,ctx);
 	}
 	/**
@@ -84,3 +88,4 @@ module Main {
 	}
 }
 export default Main;
+

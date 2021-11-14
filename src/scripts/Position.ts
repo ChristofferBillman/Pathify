@@ -7,4 +7,7 @@ export default class Position {
 		this.x = x;
 		this.y = y;
 	}
+	public equals(p: Position){
+		return this.x === p.x && this.y === p.y;
+	}
 }
