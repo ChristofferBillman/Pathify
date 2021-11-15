@@ -4,9 +4,7 @@ import React, { useEffect } from 'react';
 function Canvas(props: any) {
 
 	useEffect(() => {
-		/*eslint-disable */
 		Main.init();
-		/*eslint-enable */
 	})
 
 	return (

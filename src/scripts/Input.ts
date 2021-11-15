@@ -38,11 +38,16 @@ module Input {
 	export function getMouseDown(): boolean{
 		return mouseDown;
 	}
+	export function isHovered(p1: Position, p2: Position ){
+		if(mPos.x < p2.x  && mPos.x > p1.x){
+			if(mPos.y < p2.y && mPos.y > p1.y){
+				return true;
+			}
+		}
+		return false;
+	}
 	// Re-write such that i doesn't break when giving the arguments in different order.
 	export function wasClicked(p1: Position, p2: Position): boolean{
-		/*console.log("p1: " + p1.x + "," + p1.y)
-		console.log("p2: " + p2.x+","+p2.y)
-		console.log("lastClick: " + lastClickPos.x + ","+lastClickPos.y)*/
 			if(lastClickPos.x < p2.x  && lastClickPos.x > p1.x){
 				if(lastClickPos.y < p2.y && lastClickPos.y > p1.y){
 					return true;

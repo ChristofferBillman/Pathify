@@ -13,7 +13,7 @@ module Main {
 	let ctx: CanvasRenderingContext2D;
 	let canvas: HTMLCanvasElement;
 
-	let squares: Square[] = [];
+	let squares: Square.Square[] = [];
 
 	let squareSize: number = 50;
 	let width!: number;
@@ -34,6 +34,7 @@ module Main {
 		ctx = canvas.getContext('2d')!;
 
 		Input.init(canvas)
+		UI.init(ctx)
 
 		canvas.addEventListener('click', () =>{
 			UI.UIObjects.forEach(UIObject =>{
@@ -42,8 +43,8 @@ module Main {
 		})
 
 		setCanvasSize()
+		Square.init(ctx);
 		squares = Square.setSquares(width,height,squareSize,5)
-
 		loop()
 	}
 	/**
@@ -51,7 +52,12 @@ module Main {
 	 */
 	function loop(){
 		draw();
+		squares.forEach(square =>{
+			square.onframe(UI.UIObjects.get('eraseButton')!.pressed);
+		})
+		UI.onframe(width,height);
 		Debug.calculatePerformance();
+		Debug.draw(width, squares.length,ctx);
 		window.requestAnimationFrame(loop);
 	}
 
@@ -62,13 +68,6 @@ module Main {
 		ctx.fillStyle = '#f7f7f7';
 		ctx.fillRect(0,0,width,height);
 		ctx.fillStyle = '#ffffff';
-
-		squares.forEach(square =>{
-			square.logic(Input.getMouseDown(),Input.getMousePos(),UI.UIObjects.get('eraseButton')!.pressed)
-			square.draw(ctx);
-		})
-		UI.draw(width,height,ctx);
-		Debug.draw(width, squares.length,ctx);
 	}
 	/**
 	 * Recalcalates the size of the canvas and the amount of squares in it.

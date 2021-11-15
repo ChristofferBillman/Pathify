@@ -9,6 +9,7 @@ module Utils {
 	 * @param ctx The canvas context which the square is to be painted on.
 	 */
 	export function drawRoundRect(x: number, y: number, w: number, h: number, r:number, ctx: any) {
+
 		if (w < 2 * r) r = w / 2;
 		if (h < 2 * r) r = h / 2;
 		ctx.beginPath();

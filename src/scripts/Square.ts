@@ -1,73 +1,79 @@
 import Position from './Position'
 import Utils from './Utils';
+import Input from './Input';
 
-export default class Square{
+module Square{
 
-	selected: boolean = false;
-	hover: boolean = false;
-	position: Position;
-	coordinates: Position;
-	size: number;
+	let ctx: CanvasRenderingContext2D;
 
-	static colors = {
+	export const colors = {
 		hover: '#a58fcc',
 		selected: '#773fd9',
 		default: '#ffffff'
 	}
-	color: string = Square.colors.default;
 
-	constructor(size: number, coordinatesOnCanvas: Position, position: Position){
-		this.size = size;
-		this.position = position;
-		this.coordinates = coordinatesOnCanvas;
-	}
-	logic(mouseDown: boolean, mousePos: Position, erase: boolean){
-		if(this.hover){
-			this.hover = false;
+	export class Square{
+
+		selected: boolean = false;
+		hover: boolean = false;
+		position: Position;
+		pos: Position;
+		size: number;
+
+		color: string = colors.default;
+
+		constructor(size: number, coordinatesOnCanvas: Position, position: Position){
+			this.size = size;
+			this.position = position;
+			this.pos = coordinatesOnCanvas;
 		}
-		if(this.mouseInSquare(mousePos)){
-			if(!mouseDown) {
-				this.hover = true;
+		onframe(erase: boolean){
+			this.logic(erase);
+			this.animate();
+			this.draw();
+		}
+		private logic(erase: boolean){
+			if(this.hover){
+				this.hover = false;
 			}
-			if(mouseDown){
-				if(erase){
-					this.selected = false;
+			if(Input.isHovered(this.pos, new Position(this.pos.x+this.size,this.pos.y+this.size) )){
+				if(!Input.getMouseDown()) {
+					this.hover = true;
 				}
-				else {
-					this.selected = true;
+				if(Input.getMouseDown()){
+					if(erase){
+						this.selected = false;
+					}
+					else {
+						this.selected = true;
+					}
 				}
 			}
 		}
-	}
+		private animate(){
+		}
 
-	draw(ctx: CanvasRenderingContext2D){
-		ctx.fillStyle = this.color;
+		private draw(){
+			ctx.fillStyle = this.color;
 
-		if(this.selected){
-			this.color = Square.colors.selected;
-		}
-		else {
-			this.color = Square.colors.default;
-		}
-		if(this.hover) {
-			ctx.fillStyle = Square.colors.hover;
-		}
-		Utils.drawRoundRect(this.coordinates.x,this.coordinates.y,this.size,this.size,5,ctx);
-	}
-	private mouseInSquare(mousePos: Position): boolean {
-		if(mousePos.x < this.coordinates.x+this.size && mousePos.x > this.coordinates.x){
-			if(mousePos.y < this.coordinates.y+this.size && mousePos.y > this.coordinates.y){
-				return true;
+			if(this.selected){
+				this.color = colors.selected;
 			}
+			else {
+				this.color = colors.default;
+			}
+			if(this.hover) {
+				ctx.fillStyle = colors.hover;
+			}
+			Utils.drawRoundRect(this.pos.x,this.pos.y,this.size,this.size,5,ctx);
 		}
-		return false;
 	}
 
 	/**
 	 * Populates this.square with squares. Is called on every iteration of loop().
 	 * @note Can be optimized, should be called every time window is resized - not in every iteration of the loop.
 	 */
-	 public static setSquares(width: number, height: number, squareSize: number, gap: number): Square[]{
+	export function setSquares(width: number, height: number, squareSize: number, gap: number): Square[]{
 		let i: number = 0;
 		let j: number = 0;
 		let squares = [];
@@ -85,4 +91,8 @@ export default class Square{
 		i++;
 		return squares;
 	}
+	export function init(context: CanvasRenderingContext2D){
+		ctx = context;
+	}
 }
+export default Square;
