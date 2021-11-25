@@ -36,12 +36,6 @@ module Main {
 		Input.init(canvas)
 		UI.init(ctx)
 
-		canvas.addEventListener('click', () =>{
-			UI.UIObjects.forEach(UIObject =>{
-				UIObject.onclick();
-			})
-		})
-
 		setCanvasSize()
 		Square.init(ctx);
 		squares = Square.setSquares(width,height,squareSize,5)

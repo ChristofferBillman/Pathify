@@ -1,4 +1,5 @@
 import Position from "./Position";
+import UI from './UI'
 
 module Input {
 	let mPos: Position;
@@ -19,6 +20,10 @@ module Input {
 		canvas.addEventListener('click', e =>{
 			let rect = canvas.getBoundingClientRect();
 			lastClickPos = new Position(e.clientX - rect.left, e.clientY - rect.top);
+
+			UI.UIObjects.forEach(UIObject =>{
+				UIObject.onclick();
+			})
 		})
 
 		window.addEventListener('keypress', e =>{

@@ -1,16 +1,11 @@
 import Position from './Position'
 import Utils from './Utils';
 import Input from './Input';
+import {Tween, ColorTween,colors} from './UI'
 
 module Square{
 
 	let ctx: CanvasRenderingContext2D;
-
-	export const colors = {
-		hover: '#a58fcc',
-		selected: '#773fd9',
-		default: '#ffffff'
-	}
 
 	export class Square{
 
@@ -20,12 +15,18 @@ module Square{
 		pos: Position;
 		size: number;
 
+		hoverTween: ColorTween;
+		selectionTween: Tween;
+
 		color: string = colors.default;
 
 		constructor(size: number, coordinatesOnCanvas: Position, position: Position){
 			this.size = size;
 			this.position = position;
 			this.pos = coordinatesOnCanvas;
+
+			this.hoverTween = new ColorTween(colors.default,colors.hover,5,true,'easeinout')
+			this.selectionTween = new Tween(0,1,5,true,'easeinout')
 		}
 		onframe(erase: boolean){
 			this.logic(erase);
@@ -51,24 +52,23 @@ module Square{
 			}
 		}
 		private animate(){
+			this.color = this.hoverTween.tween();
+			if(this.hover) {
+				this.hoverTween.start()
+			}
+			else {
+				this.hoverTween.interrupt()
+			}
+			if(this.selected){
+				 this.color = colors.selected;
+			}
 		}
 
 		private draw(){
-			ctx.fillStyle = this.color;
-
-			if(this.selected){
-				this.color = colors.selected;
-			}
-			else {
-				this.color = colors.default;
-			}
-			if(this.hover) {
-				ctx.fillStyle = colors.hover;
-			}
+			ctx.fillStyle = this.color
 			Utils.drawRoundRect(this.pos.x,this.pos.y,this.size,this.size,5,ctx);
 		}
 	}
-
 	/**
 	 * Populates this.square with squares. Is called on every iteration of loop().
 	 * @note Can be optimized, should be called every time window is resized - not in every iteration of the loop.
