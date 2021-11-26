@@ -1,4 +1,4 @@
-import Position from './Position'
+import ValuePair from './ValuePair'
 import Utils from './Utils';
 import Input from './Input';
 import {Tween, ColorTween,colors} from './UI'
@@ -11,8 +11,8 @@ module Square{
 
 		selected: boolean = false;
 		hover: boolean = false;
-		position: Position;
-		pos: Position;
+		position: ValuePair;
+		pos: ValuePair;
 		size: number;
 
 		hoverTween: ColorTween;
@@ -20,7 +20,7 @@ module Square{
 
 		color: string = colors.default;
 
-		constructor(size: number, coordinatesOnCanvas: Position, position: Position){
+		constructor(size: number, coordinatesOnCanvas: ValuePair, position: ValuePair){
 			this.size = size;
 			this.position = position;
 			this.pos = coordinatesOnCanvas;
@@ -37,7 +37,7 @@ module Square{
 			if(this.hover){
 				this.hover = false;
 			}
-			if(Input.isHovered(this.pos, new Position(this.pos.x+this.size,this.pos.y+this.size) )){
+			if(Input.isHovered(this.pos, new ValuePair(this.pos.x+this.size,this.pos.y+this.size) )){
 				if(!Input.getMouseDown()) {
 					this.hover = true;
 				}
@@ -52,6 +52,8 @@ module Square{
 			}
 		}
 		private animate(){
+			this.color = colors.default
+			/*
 			this.color = this.hoverTween.tween();
 			if(this.hover) {
 				this.hoverTween.start()
@@ -59,6 +61,7 @@ module Square{
 			else {
 				this.hoverTween.interrupt()
 			}
+			*/
 			if(this.selected){
 				 this.color = colors.selected;
 			}
@@ -82,8 +85,8 @@ module Square{
 			for(let y = 0; y < height; y = y + squareSize+gap){
 				squares.push(
 					new Square(squareSize,
-					new Position(x,y),
-					new Position(i,j))
+					new ValuePair(x,y),
+					new ValuePair(i,j))
 					)
 			}
 			j++;

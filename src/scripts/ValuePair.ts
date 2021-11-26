@@ -1,4 +1,4 @@
-export default class Position {
+export default class ValuePair {
 
 	x: number;
 	y: number;
@@ -7,7 +7,7 @@ export default class Position {
 		this.x = x;
 		this.y = y;
 	}
-	public equals(p: Position){
+	public equals(p: ValuePair){
 		return this.x === p.x && this.y === p.y;
 	}
 }

@@ -1,25 +1,25 @@
-import Position from "./Position";
+import ValuePair from "./ValuePair";
 import UI from './UI'
 
 module Input {
-	let mPos: Position;
+	let mPos: ValuePair;
 	let mouseDown: boolean = false;
 	let dPressed: boolean = false;
-	let lastClickPos: Position;
+	let lastClickPos: ValuePair;
 
 	export function init(canvas: HTMLCanvasElement){
-		mPos = new Position(0,0);
-		lastClickPos = new Position(0,0);
+		mPos = new ValuePair(0,0);
+		lastClickPos = new ValuePair(0,0);
 
 		canvas.addEventListener('mousemove', e =>{
 			let rect = canvas.getBoundingClientRect();
-			mPos = new Position(e.clientX - rect.left, e.clientY - rect.top);
+			mPos = new ValuePair(e.clientX - rect.left, e.clientY - rect.top);
 		})
 		canvas.addEventListener('mousedown', () =>{mouseDown = true;})
 		canvas.addEventListener('mouseup', () =>{mouseDown = false;})
 		canvas.addEventListener('click', e =>{
 			let rect = canvas.getBoundingClientRect();
-			lastClickPos = new Position(e.clientX - rect.left, e.clientY - rect.top);
+			lastClickPos = new ValuePair(e.clientX - rect.left, e.clientY - rect.top);
 
 			UI.UIObjects.forEach(UIObject =>{
 				UIObject.onclick();
@@ -37,13 +37,13 @@ module Input {
 			}
 		})
 	}
-	export function getMousePos(): Position{
+	export function getMousePos(): ValuePair{
 		return mPos;
 	}
 	export function getMouseDown(): boolean{
 		return mouseDown;
 	}
-	export function isHovered(p1: Position, p2: Position ){
+	export function isHovered(p1: ValuePair, p2: ValuePair ){
 		if(mPos.x < p2.x  && mPos.x > p1.x){
 			if(mPos.y < p2.y && mPos.y > p1.y){
 				return true;
@@ -52,7 +52,7 @@ module Input {
 		return false;
 	}
 	// Re-write such that i doesn't break when giving the arguments in different order.
-	export function wasClicked(p1: Position, p2: Position): boolean{
+	export function wasClicked(p1: ValuePair, p2: ValuePair): boolean{
 			if(lastClickPos.x < p2.x  && lastClickPos.x > p1.x){
 				if(lastClickPos.y < p2.y && lastClickPos.y > p1.y){
 					return true;

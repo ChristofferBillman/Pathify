@@ -47,7 +47,7 @@ module Main {
 	function loop(){
 		draw();
 		squares.forEach(square =>{
-			square.onframe(UI.UIObjects.get('eraseButton')!.pressed);
+			square.onframe((UI.UIObjects.get('eraseButton') as UI.Button)!.pressed);
 		})
 		UI.onframe(width,height);
 		Debug.calculatePerformance();
