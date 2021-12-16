@@ -10,7 +10,7 @@ module Main {
 	let ctx: CanvasRenderingContext2D;
 	let canvas: HTMLCanvasElement;
 
-	let squares: Square.Square[] = [];
+	let squares: Square.Square[][] = [];
 
 	let squareSize: number = 50;
 	let width!: number;
@@ -36,6 +36,7 @@ module Main {
 		setCanvasSize()
 		Square.init(ctx);
 		squares = Square.setSquares(width,height,squareSize,5)
+		console.log(squares)
 		loop()
 	}
 	/**
@@ -43,9 +44,12 @@ module Main {
 	 */
 	function loop(){
 		draw();
-		squares.forEach(square =>{
-			square.onframe((UI.UIObjects.get('eraseButton') as UI.Button)!.pressed);
-		})
+		for(let i = 0; i < squares.length; i++){
+			for(let j = 0; j < squares[i].length; j++){
+				squares[i][j].onframe((UI.UIObjects.get('eraseButton') as UI.Button)!.pressed);
+			}
+		}
+
 		UI.onframe(width,height);
 		Debug.calculatePerformance();
 		Debug.draw(width, squares.length,ctx);

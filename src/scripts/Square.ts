@@ -12,19 +12,19 @@ module Square{
 
 		selected: boolean = false;
 		hover: boolean = false;
-		position: ValuePair;
 		pos: ValuePair;
 		size: number;
+
+		public visited: boolean = false;
 
 		hoverTween: ColorTween;
 		selectionTween: Tween;
 
 		color: Color = colors.default;
 
-		constructor(size: number, coordinatesOnCanvas: ValuePair, position: ValuePair){
+		constructor(size: number, position: ValuePair){
 			this.size = size;
-			this.position = position;
-			this.pos = coordinatesOnCanvas;
+			this.pos = position;
 
 			this.hoverTween = new ColorTween(colors.default,colors.hover,5,true,'easeinout')
 			this.selectionTween = new Tween(0,1,5,true,'easeinout')
@@ -58,6 +58,9 @@ module Square{
 			if(this.selected){
 				 this.color = colors.selected;
 			}
+			if(this.visited){
+				this.color = colors.visited;
+			}
 		}
 
 		private draw(){
@@ -66,25 +69,26 @@ module Square{
 		}
 	}
 	/**
-	 * Populates this.square with squares. Is called on every iteration of loop().
-	 * @note Can be optimized, should be called every time window is resized - not in every iteration of the loop.
+	 * Populates this.square with squares. Is called on init and on window resize.
 	 */
-	export function setSquares(width: number, height: number, squareSize: number, gap: number): Square[]{
+	export function setSquares(width: number, height: number, squareSize: number, gap: number): Square[][]{
 		let i: number = 0;
 		let j: number = 0;
-		let squares = [];
+		let squares: Square[][] = [];
 
 		for(let x = 0; x < width ; x = x + squareSize+gap){
+
+			console.log("HEj")
+			squares[i] = [];
+
 			for(let y = 0; y < height; y = y + squareSize+gap){
-				squares.push(
-					new Square(squareSize,
-					new ValuePair(x,y),
-					new ValuePair(i,j))
-					)
+				console.log("i: " + i + "    j: " + j);
+				squares[i][j] = new Square(squareSize, new ValuePair(x,y));
+				j++;
 			}
-			j++;
+			j = 0;
+			i++;
 		}
-		i++;
 		return squares;
 	}
 	export function init(context: CanvasRenderingContext2D){
