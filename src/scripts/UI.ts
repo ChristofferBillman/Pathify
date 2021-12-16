@@ -6,6 +6,7 @@ import Color from "./Color";
 export const colors = {
 	hover: new Color(165,143,204),
 	selected: new Color(119,63,217),
+	visited: new Color(227, 180, 11),
 	default: new Color(255,255,255),
 	buttonColor: new Color(63,204,217),
 	buttonActive: new Color(58,123,207),
@@ -375,6 +376,17 @@ module UI{
 		onclick(): void {
 		}
 	}
+	class SetGoalButton extends Button{
+
+		public onclick(): void {
+			if(Input.wasClicked(this.pos, new ValuePair(this.pos.x + this.width, this.pos.y + this.height))){
+				if(this.pressed === false) this.pressed = true;
+				else this.pressed = false;
+			}
+
+			console.log("hej")
+		}
+	}
 
 	export function onframe(width: number, height: number){
 
@@ -405,12 +417,13 @@ module UI{
 			colors.buttonColor,
 			colors.buttonActive
 			));
-		UIObjects.set('setGoalButton', new Button(
+		UIObjects.set('setGoalButton', new SetGoalButton(
 			new ValuePair(60*2+10,60),
 			60,60,
 			10,
 			colors.buttonColor,
-			colors.buttonActive));
+			colors.buttonActive
+			));
 		UIObjects.set('setStartButton', new Button(
 			new ValuePair(60*3+20,60),
 			60,60,
