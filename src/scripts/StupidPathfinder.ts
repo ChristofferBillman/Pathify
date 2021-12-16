@@ -3,19 +3,21 @@ import ValuePair from "./ValuePair";
 
 export default class StupidPathfinder{
 
+	pos: ValuePair;
+	arr: Square.Square[];
+	squares: Square.Square[][];
+
 	constructor(world: Square.Square[][]){
-		let arr: Square.Square[] = [];
+		this.pos = new ValuePair(0,0)
+		this.arr = [];
+		this.squares = world;
 
-		setInterval(this.iterate,500,
-			 new ValuePair(0,0),
-			 world,
-			 arr);
+		setInterval(this.iterate,500,this);
 	}
-	public iterate(pos: ValuePair, squares: Square.Square[][], queue: Square.Square[]){
+	public iterate(instance: this){
 
-		
-		pos.x++;
-		pos.y++;
-		squares[pos.x][pos.y].visited = true;
+		console.log(instance.pos)
+		//pos.y++;
+		//squares[pos.x][pos.y].visited = true;
 	}
 }
