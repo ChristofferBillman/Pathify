@@ -2,6 +2,7 @@ import ValuePair from './ValuePair'
 import Utils from './Utils';
 import Input from './Input';
 import {Tween, ColorTween,colors} from './UI'
+import Color from './Color'
 
 module Square{
 
@@ -18,7 +19,7 @@ module Square{
 		hoverTween: ColorTween;
 		selectionTween: Tween;
 
-		color: string = colors.default;
+		color: Color = colors.default;
 
 		constructor(size: number, coordinatesOnCanvas: ValuePair, position: ValuePair){
 			this.size = size;
@@ -53,22 +54,14 @@ module Square{
 		}
 		private animate(){
 			this.color = colors.default
-			/*
-			this.color = this.hoverTween.tween();
-			if(this.hover) {
-				this.hoverTween.start()
-			}
-			else {
-				this.hoverTween.interrupt()
-			}
-			*/
+			
 			if(this.selected){
 				 this.color = colors.selected;
 			}
 		}
 
 		private draw(){
-			ctx.fillStyle = this.color
+			ctx.fillStyle = this.color.getString()
 			Utils.drawRoundRect(this.pos.x,this.pos.y,this.size,this.size,5,ctx);
 		}
 	}

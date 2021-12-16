@@ -1,28 +1,45 @@
 import Utils from "./Utils";
 import ValuePair from "./ValuePair";
 import Input from './Input';
+import Color from "./Color";
 
 export const colors = {
-	hover: 'rgba(165,143,204,1)',
-	selected: 'rgba(119,63,217,1)',
-	default: 'rgba(255,255,255,1)',
-	buttonColor: 'rgba(63,204,217)',
-	buttonActive: 'rgba(58,123,207)',
-	invisible: 'rgba(0,0,0,0)'
+	hover: new Color(165,143,204),
+	selected: new Color(119,63,217),
+	default: new Color(255,255,255),
+	buttonColor: new Color(63,204,217),
+	buttonActive: new Color(58,123,207),
+	invisible: new Color(255,255,255,0)
 }
 
+export interface UIObject{
+	onframe(): void;
+	onclick(): void;
+}
+
+/**
+ *	Handles tweening of values.
+ */
 export class Tween {
 	interrupted: boolean = true;
 	tweenBack: boolean;
 	from: number;
 	to: number;
-	difference: number;
+	interval: number;
 	count: number = 0;
 	animationLength: number;
 	x: number;
 	dx: number;
 	timingFunc!: Function;
 
+	/**
+	 * Handles tweeing from a value to another.
+	 * @param from Value to start tween from.
+	 * @param to Value to end tween on.
+	 * @param animationLength The length of the tween, in frames.
+	 * @param tweenBack Defines whether or not the animation should 'tween back' to the 'from' value when interrupted.
+	 * @param timingFunc Function that defines how to interpolate the values returned by tween().
+	 */
 	constructor(from: number, to: number,animationLength: number, tweenBack: boolean, timingFunc: string | ((x:number) => number)){
 		this.from = from;
 		this.to = to;
@@ -30,8 +47,8 @@ export class Tween {
 		this.tweenBack = tweenBack;
 
 		this.x = 1/animationLength; // Only inital value, will increment when tween() is called.
-		this.dx = 1/animationLength;
-		this.difference = to - from;
+		this.dx = 1/animationLength; // Will never change.
+		this.interval = to - from;
 
 		if(typeof(timingFunc) === 'string'){
 			switch(timingFunc){
@@ -59,19 +76,23 @@ export class Tween {
 			this.timingFunc = timingFunc;
 		}
 	}
+	/**
+	 * Gets you the next value in the animation. Should be called each frame.
+	 * @returns The next value in the animation.
+	 */
 	tween(): number{
 		let computedValue: number
 		if(!this.interrupted && this.count < this.animationLength){
 			this.x = this.x + this.dx;
 			this.count++;
 			computedValue = this.timingFunc(this.x);
-			return (computedValue * this.difference) + this.from;
+			return (computedValue * this.interval) + this.from;
 		}
 		else if(this.tweenBack && this.count > 0){
 			this.x = this.x - this.dx;
 			this.count--;
 			computedValue = this.timingFunc(this.x);
-			return (computedValue * this.difference) + this.from;
+			return (computedValue * this.interval) + this.from;
 		} else if(this.tweenBack) {
 			return this.from;
 		}
@@ -80,19 +101,31 @@ export class Tween {
 		}
 		return 0
 	}
+	/**
+	 * Resets the tween such that it can be tweened again.
+	 */
 	reset():void{
 		this.count = 0;
 		this.x = 1/this.animationLength; // Only inital value, will increment when tween() is called.
 		this.dx = 1/this.animationLength;
 	}
+	/**
+	 * Triggers the tweenback.
+	 * NOTE: Should only be called if tweenback was set to true in constructor.
+	 */
 	interrupt(): void{
 		this.interrupted = true;
 	}
+	/**
+	 * Starts the animation. Can be called each frame without disrupting the tween, though not necessary.
+	 */
 	start(): void{
 		this.interrupted = false;
 	}
 }
-
+/**
+ * Tweens between two rgba values.
+ */
 export class ColorTween {
 
 	rt: Tween;
@@ -100,25 +133,26 @@ export class ColorTween {
 	bt: Tween;
 	at: Tween;
 
-	from: number[];
-	to: number[];
+	from: Color;
+	to: Color;
 
-	constructor(from: string, to: string,animationLength: number, tweenBack: boolean, timingFunc: string | ((x:number) => number)){
-		this.from = this.toArr(from)
-		this.to = this.toArr(to)
+	constructor(from: Color, to: Color,animationLength: number, tweenBack: boolean, timingFunc: string | ((x:number) => number)){
 
-		this.rt = new Tween(this.from[0],this.to[0],animationLength,tweenBack,timingFunc)
-		this.gt = new Tween(this.from[1],this.to[1],animationLength,tweenBack,timingFunc)
-		this.bt = new Tween(this.from[2],this.to[2],animationLength,tweenBack,timingFunc)
-		this.at = new Tween(this.from[3],this.to[3],animationLength,tweenBack,timingFunc)
+		this.from = from;
+		this.to = to;
+
+		this.rt = new Tween(this.from.r,this.to.r,animationLength,tweenBack,timingFunc)
+		this.gt = new Tween(this.from.g,this.to.g,animationLength,tweenBack,timingFunc)
+		this.bt = new Tween(this.from.b,this.to.b,animationLength,tweenBack,timingFunc)
+		this.at = new Tween(this.from.a,this.to.a,animationLength,tweenBack,timingFunc)
 	}
-	tween(): string{
-		let cv: number[] = []
-		cv[0] = this.rt.tween()
-		cv[1] = this.gt.tween()
-		cv[2] = this.bt.tween()
-		cv[3] = this.at.tween()
-		return 'rgba('+cv[0]+','+cv[1]+','+cv[2]+','+cv[3]+')'
+	tween(): Color{
+		return new Color(
+			this.rt.tween(),
+			this.gt.tween(),
+			this.bt.tween(),
+			this.at.tween()
+			)
 	}
 	start(){
 		this.rt.start();
@@ -132,20 +166,9 @@ export class ColorTween {
 		this.bt.interrupt();
 		this.at.interrupt();
 	}
-	toArr(color: string){
-		color = color.replace(')','')
-		color = color.replace('rgba(','')
-		return color.split(',').map(Number);
-	}
-
 }
 
 module UI{
-
-	interface UIObject{
-		onframe(): void;
-		onclick(): void;
-	}
 
 	let ctx: CanvasRenderingContext2D;
 	export const UIObjects: Map<String, UIObject> = new Map();
@@ -215,9 +238,9 @@ module UI{
 			this.pos.y = this.lastGridPos.y - this.diffY * d
 		}
 		draw(){
-			ctx.fillStyle = colors.hover
+			ctx.fillStyle = colors.hover.getString()
 			if(this.overUI) {
-				ctx.fillStyle = colors.invisible
+				ctx.fillStyle = colors.invisible.getString()
 			}
 
 			Utils.drawRoundRect(this.pos.x,this.pos.y,this.size,this.size,this.borderRadius,ctx);
@@ -233,8 +256,8 @@ module UI{
 		defaultWidth: number;
 		defaultHeight: number;
 		borderRadius: number;
-		defaultColor: string;
-		pressedColor: string;
+		defaultColor: Color;
+		pressedColor: Color;
 	
 		pressed: boolean = false;
 		hover: boolean = false;
@@ -242,8 +265,9 @@ module UI{
 		scalingTween: Tween;
 		translationTween: Tween;
 		mouseDownTween: Tween;
+		colorTween: ColorTween;
 	
-		constructor(pos: ValuePair, width: number, height: number,borderRadius: number, defaultColor: string, pressedColor: string){
+		constructor(pos: ValuePair, width: number, height: number,borderRadius: number, defaultColor: Color, pressedColor: Color){
 			this.pos = pos;
 			this.defaultPos = new ValuePair(pos.x,pos.y)
 			this.width = width;
@@ -258,6 +282,8 @@ module UI{
 			this.scalingTween = new Tween(1,1.2,15,true,'easeoutback')
 			this.translationTween = new Tween(0,1,15,true,'easeoutback')
 			this.mouseDownTween = new Tween(1,1.1,10,true,'easeinout')
+			let hoverColor = new Color(this.defaultColor.r + 10,this.defaultColor.g + 10,this.defaultColor.b + 10)
+			this.colorTween = new ColorTween(this.defaultColor, hoverColor,15,true,'easeinout')
 		}
 	
 		public onframe(): void{
@@ -287,6 +313,7 @@ module UI{
 			if(this.hover){
 				this.scalingTween.start();
 				this.translationTween.start();
+				this.colorTween.start();
 
 				if(Input.getMouseDown()){
 					this.mouseDownTween.start()
@@ -299,6 +326,7 @@ module UI{
 				this.scalingTween.interrupt();
 				this.translationTween.interrupt();
 				this.mouseDownTween.interrupt();
+				this.colorTween.interrupt();
 			}
 			// Only run Tween.tween() once per frame.
 			let pScaling = this.mouseDownTween.tween()
@@ -308,17 +336,16 @@ module UI{
 			this.height = scale*mouseDownScale*this.defaultHeight;
 			this.pos.x =  this.defaultPos.x + -6 * tFactor * pScaling
 			this.pos.y =  this.defaultPos.y + -6 * tFactor * pScaling
-			
 		}
 		private draw():void{
-			ctx.fillStyle = this.defaultColor;
+			ctx.fillStyle = this.colorTween.tween().getString()
 			if(this.pressed){
-				ctx.fillStyle = this.pressedColor;
+				ctx.fillStyle = this.pressedColor.getString()
 			}
-			Utils.drawRoundRect(this.pos.x,this.pos.y,this.width,this.height,this.borderRadius,ctx);
+			Utils.drawRoundRect(this.pos.x,this.pos.y,this.width,this.height,this.borderRadius,ctx)
 		}
 		getState(){
-			return this.pressed;
+			return this.pressed
 		}
 	}
 	class Menu implements UIObject{
@@ -368,7 +395,7 @@ module UI{
 
 		UIObjects.set('menu', new Menu(
 			new ValuePair(50,50),
-			new ValuePair(500,80)
+			new ValuePair(650,80)
 			))
 
 		UIObjects.set('eraseButton', new Button(
@@ -391,10 +418,10 @@ module UI{
 			colors.buttonColor,
 			colors.buttonActive
 			));
-
+		let color = new Color(119,63,217)
 		for(let i = 0; i < 5 ; i++){
 			let x = 70 * 5-10 + (i * 70)
-			let color = 'rgb('+(119 + i*20) +', 63, 217)'
+			color.r = color.r + i * 20
 			UIObjects.set('genericButton_' + i , new Button(new ValuePair(x,60),60,60,10,color,colors.buttonActive));
 		}
 	}

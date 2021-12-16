@@ -4,9 +4,6 @@ import UI from './UI'
 import Debug from './Debug'
 /*
  * TODO: * Write TSDoc.
- * 		 * Make grid pannable.
- * 		   Define data structure for storing 'maps'. Add 'state' to Square.
- * NOTE: * Squares are inserted into array in the order they are seen in the grid. Gives easy access to any square without search, write findSquare(), given the coordinates.
  */
 
 module Main {
@@ -30,7 +27,7 @@ module Main {
 		if (!canvas.getContext) {
 			console.log('Canvas is not supported.')
 		}
-		// Asserting that context is not null.
+
 		ctx = canvas.getContext('2d')!;
 
 		Input.init(canvas)
@@ -71,7 +68,7 @@ module Main {
 		squares = Square.setSquares(width,height,squareSize,5)
 	}
 	/**
-	 * Sets the
+	 * Sets the size of the canvas.
 	 */
 	function setCanvasSize(){
 		ctx.canvas.width  = window.innerWidth;
