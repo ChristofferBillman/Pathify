@@ -78,12 +78,8 @@ module Square{
 		let squares: Square[][] = [];
 
 		for(let x = 0; x < width ; x = x + squareSize+gap){
-
-			console.log("HEj")
 			squares[i] = [];
-
 			for(let y = 0; y < height; y = y + squareSize+gap){
-				console.log("i: " + i + "    j: " + j);
 				squares[i][j] = new Square(squareSize, new ValuePair(x,y));
 				j++;
 			}
