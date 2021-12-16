@@ -2,6 +2,7 @@ import Square from './Square'
 import Input from './Input'
 import UI from './UI'
 import Debug from './Debug'
+import StupidPathfinder from './StupidPathfinder';
 /*
  * TODO: * Write TSDoc.
  */
@@ -36,7 +37,8 @@ module Main {
 		setCanvasSize()
 		Square.init(ctx);
 		squares = Square.setSquares(width,height,squareSize,5)
-		console.log(squares)
+
+		/*let spf: StupidPathfinder =*/ new StupidPathfinder(squares);
 		loop()
 	}
 	/**

@@ -55,11 +55,12 @@ module Square{
 		private animate(){
 			this.color = colors.default
 			
-			if(this.selected){
-				 this.color = colors.selected;
-			}
 			if(this.visited){
 				this.color = colors.visited;
+			}
+			
+			if(this.selected){
+				 this.color = colors.selected;
 			}
 		}
 
