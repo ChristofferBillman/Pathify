@@ -259,6 +259,7 @@ module UI{
 		borderRadius: number;
 		defaultColor: Color;
 		pressedColor: Color;
+		image: HTMLImageElement | undefined;
 	
 		pressed: boolean = false;
 		hover: boolean = false;
@@ -268,7 +269,7 @@ module UI{
 		mouseDownTween: Tween;
 		colorTween: ColorTween;
 	
-		constructor(pos: ValuePair, width: number, height: number,borderRadius: number, defaultColor: Color, pressedColor: Color){
+		constructor(pos: ValuePair, width: number, height: number,borderRadius: number, defaultColor: Color, pressedColor: Color,image?: string){
 			this.pos = pos;
 			this.defaultPos = new ValuePair(pos.x,pos.y)
 			this.width = width;
@@ -276,6 +277,10 @@ module UI{
 			this.defaultWidth = width;
 			this.defaultHeight = height;
 			this.borderRadius = borderRadius;
+			if(image){
+				this.image = new Image();
+				this.image.src = image;
+			}
 			
 			this.defaultColor = defaultColor;
 			this.pressedColor = pressedColor;
@@ -340,10 +345,13 @@ module UI{
 		}
 		private draw():void{
 			ctx.fillStyle = this.colorTween.tween().getString()
+
 			if(this.pressed){
 				ctx.fillStyle = this.pressedColor.getString()
 			}
+			
 			Utils.drawRoundRect(this.pos.x,this.pos.y,this.width,this.height,this.borderRadius,ctx)
+			if(this.image) ctx.drawImage(this.image,this.pos.x+10,this.pos.y+10,this.width-20,this.height-20);
 		}
 		getState(){
 			return this.pressed
@@ -422,7 +430,8 @@ module UI{
 			60,60,
 			10,
 			colors.buttonColor,
-			colors.buttonActive
+			colors.buttonActive,
+			'/img/goal.svg'
 			));
 		UIObjects.set('setStartButton', new Button(
 			new ValuePair(60*3+20,60),
