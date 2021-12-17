@@ -1,4 +1,4 @@
-# Pathify - A work-in-progress visualiser for pathfinding algorithms.
+# Pathify - A work-in-progress vizualiser for pathfinding algorithms.
 
 Work in progress! Most of the work done is in src/scripts.
 
