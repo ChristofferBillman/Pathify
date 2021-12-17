@@ -88,6 +88,9 @@ module Square{
 		}
 		return squares;
 	}
+	export function isInGrid(pos: ValuePair, squares: Square[][]){
+		return pos.x < squares.length-1 && pos.x > 0 && pos.y < squares[0].length-1 && pos.y > 0;
+	}
 	export function init(context: CanvasRenderingContext2D){
 		ctx = context;
 	}
