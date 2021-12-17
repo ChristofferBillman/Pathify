@@ -54,7 +54,7 @@ module Main {
 
 		UI.onframe(width,height);
 		Debug.calculatePerformance();
-		Debug.draw(width, squares.length,ctx);
+		Debug.draw(width, squares.length * squares[0].length,ctx);
 		window.requestAnimationFrame(loop);
 	}
 
