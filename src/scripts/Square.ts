@@ -12,6 +12,8 @@ module Square{
 
 		selected: boolean = false;
 		hover: boolean = false;
+		start: boolean = false;
+		goal: boolean = false;
 		pos: ValuePair;
 		size: number;
 
@@ -21,6 +23,7 @@ module Square{
 		selectionTween: Tween;
 
 		color: Color = colors.default;
+		image: HTMLImageElement | undefined = new Image();
 
 		constructor(size: number, position: ValuePair){
 			this.size = size;
@@ -67,6 +70,29 @@ module Square{
 		private draw(){
 			ctx.fillStyle = this.color.getString()
 			Utils.drawRoundRect(this.pos.x,this.pos.y,this.size,this.size,5,ctx);
+
+			if(this.image) ctx.drawImage(this.image,this.pos.x+10,this.pos.y+10,this.size-20,this.size-20);
+		}
+		public toggleGoal(){
+				if(this.image){
+					this.goal = false;
+					this.image = undefined;
+				}
+				else{
+					this.goal = true;
+					this.image!.src = '/img/goal.svg';
+				}
+		}
+		public toggleStart(){
+
+			if(this.image){
+				this.start = false;
+				this.image = undefined;
+			}
+			else{
+				this.start = true;
+				this.image!.src = '/img/start.svg';
+			}
 		}
 	}
 	/**
