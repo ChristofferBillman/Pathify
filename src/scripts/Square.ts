@@ -1,12 +1,13 @@
 import ValuePair from './ValuePair'
 import Utils from './Utils';
 import Input from './Input';
-import {Tween, ColorTween,colors} from './UI'
+import UI, {Tween, ColorTween,colors} from './UI'
 import Color from './Color'
 
 module Square{
 
 	let ctx: CanvasRenderingContext2D;
+	let UIObjects: Map<String, UI.UIObject>
 
 	export class Square{
 
@@ -23,7 +24,7 @@ module Square{
 		selectionTween: Tween;
 
 		color: Color = colors.default;
-		image: HTMLImageElement | undefined = new Image();
+		image: HTMLImageElement | undefined;
 
 		constructor(size: number, position: ValuePair){
 			this.size = size;
@@ -36,6 +37,13 @@ module Square{
 			this.logic(erase);
 			this.animate();
 			this.draw();
+		}
+		onclick(){
+			if(Input.wasClicked(this.pos, new ValuePair(this.pos.x + this.size,this.pos.y + this.size))){
+				if((UIObjects.get('setGoalButton') as UI.Button).pressed ){
+					this.toggleGoal();
+				}
+			}
 		}
 		private logic(erase: boolean){
 			if(this.hover){
@@ -67,6 +75,7 @@ module Square{
 			}
 		}
 
+
 		private draw(){
 			ctx.fillStyle = this.color.getString()
 			Utils.drawRoundRect(this.pos.x,this.pos.y,this.size,this.size,5,ctx);
@@ -79,6 +88,7 @@ module Square{
 					this.image = undefined;
 				}
 				else{
+					this.image = new Image();
 					this.goal = true;
 					this.image!.src = '/img/goal.svg';
 				}
@@ -117,8 +127,9 @@ module Square{
 	export function isInGrid(pos: ValuePair, squares: Square[][]){
 		return pos.x < squares.length-1 && pos.x > 0 && pos.y < squares[0].length-1 && pos.y > 0;
 	}
-	export function init(context: CanvasRenderingContext2D){
+	export function init(context: CanvasRenderingContext2D, UIobj: Map<String, UI.UIObject>){
 		ctx = context;
+		UIObjects = UIobj;
 	}
 }
 export default Square;

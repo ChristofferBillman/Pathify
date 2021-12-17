@@ -1,15 +1,18 @@
 import ValuePair from "./ValuePair";
 import UI from './UI'
+import Square from "./Square";
 
 module Input {
 	let mPos: ValuePair;
 	let mouseDown: boolean = false;
 	let dPressed: boolean = false;
 	let lastClickPos: ValuePair;
+	let squares: Square.Square[][];
 
-	export function init(canvas: HTMLCanvasElement){
+	export function init(canvas: HTMLCanvasElement, grid: Square.Square[][]){
 		mPos = new ValuePair(0,0);
 		lastClickPos = new ValuePair(0,0);
+		squares = grid;
 
 		canvas.addEventListener('mousemove', e =>{
 			let rect = canvas.getBoundingClientRect();
@@ -24,6 +27,12 @@ module Input {
 			UI.UIObjects.forEach(UIObject =>{
 				UIObject.onclick();
 			})
+
+			for(let i = 0; i < squares.length; i++){
+				for(let j = 0; j < squares[i].length; j++){
+					squares[i][j].onclick();
+				}
+			}
 		})
 
 		window.addEventListener('keypress', e =>{
@@ -60,6 +69,7 @@ module Input {
 			}
 			return false;
 		}
+	
 	export function pPressed(): boolean{
 		return dPressed;
 	}

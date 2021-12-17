@@ -13,11 +13,6 @@ export const colors = {
 	invisible: new Color(255,255,255,0)
 }
 
-export interface UIObject{
-	onframe(): void;
-	onclick(): void;
-}
-
 /**
  *	Handles tweening of values.
  */
@@ -170,6 +165,11 @@ export class ColorTween {
 }
 
 module UI{
+
+	export interface UIObject{
+		onframe(): void;
+		onclick(): void;
+	}
 
 	let ctx: CanvasRenderingContext2D;
 	export const UIObjects: Map<String, UIObject> = new Map();
@@ -384,17 +384,15 @@ module UI{
 		onclick(): void {
 		}
 	}
-	class SetGoalButton extends Button{
+	/*class SetGoalButton extends Button{
 
 		public onclick(): void {
 			if(Input.wasClicked(this.pos, new ValuePair(this.pos.x + this.width, this.pos.y + this.height))){
 				if(this.pressed === false) this.pressed = true;
 				else this.pressed = false;
 			}
-
-			console.log("hej")
 		}
-	}
+	}*/
 
 	export function onframe(width: number, height: number){
 
@@ -403,7 +401,7 @@ module UI{
 			UIObject.onframe();
 		})
 	}
-	export function init(context: CanvasRenderingContext2D){
+	export function init(context: CanvasRenderingContext2D): Map<String, UIObject>{
 		ctx = context;
 
 		UIObjects.set('cursor', new Cursor(
@@ -425,7 +423,7 @@ module UI{
 			colors.buttonColor,
 			colors.buttonActive
 			));
-		UIObjects.set('setGoalButton', new SetGoalButton(
+		UIObjects.set('setGoalButton', new Button(
 			new ValuePair(60*2+10,60),
 			60,60,
 			10,
@@ -446,6 +444,7 @@ module UI{
 			color.r = color.r + i * 20
 			UIObjects.set('genericButton_' + i , new Button(new ValuePair(x,60),60,60,10,color,colors.buttonActive));
 		}
+		return UIObjects;
 	}
 }
 export default UI;

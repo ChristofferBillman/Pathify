@@ -31,12 +31,12 @@ module Main {
 
 		ctx = canvas.getContext('2d')!;
 
-		Input.init(canvas)
-		UI.init(ctx)
+		let UIObjects: Map<String, UI.UIObject> = UI.init(ctx)
 
 		setCanvasSize()
-		Square.init(ctx);
+		Square.init(ctx,UIObjects);
 		squares = Square.setSquares(width,height,squareSize,5)
+		Input.init(canvas,squares)
 
 		/*let spf: StupidPathfinder =*/ new StupidPathfinder(squares);
 		loop()
