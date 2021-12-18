@@ -3,6 +3,7 @@ import Utils from './Utils';
 import Input from './Input';
 import UI, {Tween, ColorTween,colors} from './UI'
 import Color from './Color'
+import Grid from './Grid';
 
 module Square{
 
@@ -41,7 +42,12 @@ module Square{
 		onclick(){
 			if(Input.wasClicked(this.pos, new ValuePair(this.pos.x + this.size,this.pos.y + this.size))){
 				if((UIObjects.get('setGoalButton') as UI.Button).pressed ){
-					this.toggleGoal();
+					Grid.unsetGoals();
+					this.setGoal();
+				}
+				if((UIObjects.get('setStartButton') as UI.Button).pressed ){
+					Grid.unsetStarts();
+					this.setStart();
 				}
 			}
 		}
@@ -82,50 +88,24 @@ module Square{
 
 			if(this.image) ctx.drawImage(this.image,this.pos.x+10,this.pos.y+10,this.size-20,this.size-20);
 		}
-		public toggleGoal(){
-				if(this.image){
-					this.goal = false;
-					this.image = undefined;
-				}
-				else{
-					this.image = new Image();
-					this.goal = true;
-					this.image!.src = '/img/goal.svg';
-				}
+		public setGoal(){
+			this.image = new Image();
+			this.goal = true;
+			this.image!.src = '/img/goal.svg';
 		}
-		public toggleStart(){
-
-			if(this.image){
-				this.start = false;
-				this.image = undefined;
-			}
-			else{
-				this.start = true;
-				this.image!.src = '/img/start.svg';
-			}
+		public unsetGoal(){
+			this.goal = false;
+			this.image = undefined;
 		}
-	}
-	/**
-	 * Populates this.square with squares. Is called on init and on window resize.
-	 */
-	export function setSquares(width: number, height: number, squareSize: number, gap: number): Square[][]{
-		let i: number = 0;
-		let j: number = 0;
-		let squares: Square[][] = [];
-
-		for(let x = 0; x < width ; x = x + squareSize+gap){
-			squares[i] = [];
-			for(let y = 0; y < height; y = y + squareSize+gap){
-				squares[i][j] = new Square(squareSize, new ValuePair(x,y));
-				j++;
-			}
-			j = 0;
-			i++;
+		public setStart(){
+			this.image = new Image();
+			this.start = true;
+			this.image!.src = '/img/start.svg';
 		}
-		return squares;
-	}
-	export function isInGrid(pos: ValuePair, squares: Square[][]){
-		return pos.x < squares.length-1 && pos.x > 0 && pos.y < squares[0].length-1 && pos.y > 0;
+		public unsetStart(){
+			this.start = false;
+			this.image = undefined;
+		}
 	}
 	export function init(context: CanvasRenderingContext2D, UIobj: Map<String, UI.UIObject>){
 		ctx = context;
