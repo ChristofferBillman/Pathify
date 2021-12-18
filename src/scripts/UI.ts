@@ -9,7 +9,7 @@ export const colors = {
 	visited: new Color(227, 180, 11),
 	default: new Color(255,255,255),
 	buttonColor: new Color(63,204,217),
-	buttonActive: new Color(58,123,207),
+	buttonActive: new Color(119,63,217),
 	invisible: new Color(255,255,255,0)
 }
 
@@ -288,8 +288,8 @@ module UI{
 			this.scalingTween = new Tween(1,1.2,15,true,'easeoutback')
 			this.translationTween = new Tween(0,1,15,true,'easeoutback')
 			this.mouseDownTween = new Tween(1,1.1,10,true,'easeinout')
-			let hoverColor = new Color(this.defaultColor.r + 10,this.defaultColor.g + 10,this.defaultColor.b + 10)
-			this.colorTween = new ColorTween(this.defaultColor, hoverColor,15,true,'easeinout')
+			let hoverColor = new Color(this.defaultColor.r,this.defaultColor.g,this.defaultColor.b)
+			this.colorTween = new ColorTween(new Color(200,200,200), hoverColor,15,true,'easeinout')
 		}
 	
 		public onframe(): void{
@@ -300,6 +300,8 @@ module UI{
 	
 		public onclick():void {
 			if(Input.wasClicked(this.pos, new ValuePair(this.pos.x + this.width, this.pos.y + this.height))){
+				unpressAll()
+
 				if(this.pressed === false) this.pressed = true;
 				else this.pressed = false;
 			}
@@ -416,15 +418,24 @@ module UI{
 			new ValuePair(650,80)
 			))
 
-		UIObjects.set('eraseButton', new Button(
+		UIObjects.set('paintButton', new Button(
 			new ValuePair(60,60),
 			60,60,
 			10,
 			colors.buttonColor,
-			colors.buttonActive
+			colors.buttonActive,
+			'/img/brush.svg'
+			));
+		UIObjects.set('eraseButton', new Button(
+			new ValuePair(60*2+10,60),
+			60,60,
+			10,
+			colors.buttonColor,
+			colors.buttonActive,
+			'/img/cross.svg'
 			));
 		UIObjects.set('setGoalButton', new Button(
-			new ValuePair(60*2+10,60),
+			new ValuePair(60*3+20,60),
 			60,60,
 			10,
 			colors.buttonColor,
@@ -432,19 +443,27 @@ module UI{
 			'/img/goal.svg'
 			));
 		UIObjects.set('setStartButton', new Button(
-			new ValuePair(60*3+20,60),
+			new ValuePair(60*4+30,60),
 			60,60,
 			10,
 			colors.buttonColor,
-			colors.buttonActive
+			colors.buttonActive,
+			'/img/start.svg'
 			));
 		let color = new Color(119,63,217)
-		for(let i = 0; i < 5 ; i++){
-			let x = 70 * 5-10 + (i * 70)
+		for(let i = 0; i < 4 ; i++){
+			let x = 70 * 6-10 + (i * 70)
 			color.r = color.r + i * 20
-			UIObjects.set('genericButton_' + i , new Button(new ValuePair(x,60),60,60,10,color,colors.buttonActive));
+			UIObjects.set('genericButton_' + i , new Button(new ValuePair(x,60),60,60,10,color,colors.buttonActive,'/img/placeholder.svg'));
 		}
 		return UIObjects;
+	}
+	function unpressAll(){
+		UIObjects.forEach(object =>{
+			if(object instanceof Button){
+				object.pressed = false;
+			}
+		})
 	}
 }
 export default UI;
