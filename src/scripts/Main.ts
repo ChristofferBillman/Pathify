@@ -2,7 +2,8 @@ import Square from './Square'
 import Input from './Input'
 import UI from './UI'
 import Debug from './Debug'
-import StupidPathfinder from './StupidPathfinder';
+//import StupidPathfinder from './StupidPathfinder';
+import Grid from './Grid';
 /*
  * TODO: * Write TSDoc.
  */
@@ -11,9 +12,8 @@ module Main {
 	let ctx: CanvasRenderingContext2D;
 	let canvas: HTMLCanvasElement;
 
-	let squares: Square.Square[][] = [];
+	let grid: Square.Square[][];
 
-	let squareSize: number = 50;
 	let width!: number;
 	let height!: number;
 
@@ -31,14 +31,14 @@ module Main {
 
 		ctx = canvas.getContext('2d')!;
 
+		setCanvasSize();
+
 		let UIObjects: Map<String, UI.UIObject> = UI.init(ctx)
-
-		setCanvasSize()
 		Square.init(ctx,UIObjects);
-		squares = Square.setSquares(width,height,squareSize,5)
-		Input.init(canvas,squares)
+		grid = Grid.init(width,height);
+		Input.init(canvas,grid);
 
-		/*let spf: StupidPathfinder =*/ new StupidPathfinder(squares);
+		/*let spf: StupidPathfinder =*/ //new StupidPathfinder(grid);
 		loop()
 	}
 	/**
@@ -46,15 +46,10 @@ module Main {
 	 */
 	function loop(){
 		draw();
-		for(let i = 0; i < squares.length; i++){
-			for(let j = 0; j < squares[i].length; j++){
-				squares[i][j].onframe((UI.UIObjects.get('eraseButton') as UI.Button)!.pressed);
-			}
-		}
-
+		Grid.onframe();
 		UI.onframe(width,height);
 		Debug.calculatePerformance();
-		Debug.draw(width, squares.length * squares[0].length,ctx);
+		Debug.draw(width, grid.length * grid[0].length,ctx);
 		window.requestAnimationFrame(loop);
 	}
 
@@ -71,7 +66,7 @@ module Main {
 	 */
 	function onResize(){
 		setCanvasSize();
-		squares = Square.setSquares(width,height,squareSize,5)
+		grid = Grid.init(width,height);
 	}
 	/**
 	 * Sets the size of the canvas.
