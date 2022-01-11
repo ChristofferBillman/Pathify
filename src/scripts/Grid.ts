@@ -36,7 +36,15 @@ namespace Grid {
 		}
 	}
 	export function isInGrid(pos: ValuePair){
-		return pos.x < grid.length-1 && pos.x > 0 && pos.y < grid[0].length-1 && pos.y > 0;
+		console.log("=== NEW VERTEX ===")
+		console.log("pos.x: " + pos.x)
+		console.log("grid[0].length-1: " + (grid[0].length-1))
+		console.log("pos.y: " + pos.y)
+		console.log("grid.length-1: " + (grid.length-1))
+		// När man använder > så blir grannarna fel i fösta raden.
+		// När man använder >= så blir grannarna fel i sista raden.
+		// Vad beror detta på?
+		return pos.x < grid.length-1 && pos.x >= 0 && pos.y < grid[0].length-1 && pos.y >= 0;
 	}
 	export function unsetGoals(){
 		for(let i = 0; i < grid.length; i++){
@@ -44,7 +52,6 @@ namespace Grid {
 				grid[i][j].unsetGoal();
 			}
 		}
-		console.log("unsetting goals")
 	}
 	export function unsetStarts(){
 		for(let i = 0; i < grid.length; i++){
@@ -52,7 +59,6 @@ namespace Grid {
 				grid[i][j].unsetStart();
 			}
 		}
-		console.log("unsetting starts")
 	}
 }
 
