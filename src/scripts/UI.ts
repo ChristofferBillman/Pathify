@@ -6,11 +6,12 @@ import Color from "./Color";
 export const colors = {
 	hover: new Color(165,143,204),
 	selected: new Color(119,63,217),
-	visited: new Color(227, 180, 11),
+	visited: new Color(227, 97, 11),
 	default: new Color(255,255,255),
 	buttonColor: new Color(63,204,217),
 	buttonActive: new Color(119,63,217),
-	invisible: new Color(255,255,255,0)
+	invisible: new Color(255,255,255,0),
+	evaluated: new Color(227, 180, 11)
 }
 
 /**
@@ -359,7 +360,7 @@ module UI{
 			return this.pressed
 		}
 	}
-	class Menu implements UIObject{
+	export class Menu implements UIObject{
 		dim: ValuePair;
 		pos: ValuePair;
 
@@ -386,17 +387,8 @@ module UI{
 		onclick(): void {
 		}
 	}
-	/*class SetGoalButton extends Button{
 
-		public onclick(): void {
-			if(Input.wasClicked(this.pos, new ValuePair(this.pos.x + this.width, this.pos.y + this.height))){
-				if(this.pressed === false) this.pressed = true;
-				else this.pressed = false;
-			}
-		}
-	}*/
-
-	export function onframe(width: number, height: number){
+	export function onframe(){
 
 		UIObjects.forEach(UIObject=>{
 			// Draws the object on the canvas and does all logic and animation.
@@ -450,9 +442,17 @@ module UI{
 			colors.buttonActive,
 			'/img/start.svg'
 			));
+		UIObjects.set('startSearch', new Button(
+			new ValuePair(60*5+40,60),
+			60,60,
+			10,
+			colors.buttonColor,
+			colors.buttonActive,
+			'/img/placeholder.svg'
+			));
 		let color = new Color(119,63,217)
-		for(let i = 0; i < 4 ; i++){
-			let x = 70 * 6-10 + (i * 70)
+		for(let i = 0; i < 3 ; i++){
+			let x = 70 * 7-10 + (i * 70)
 			color.r = color.r + i * 20
 			UIObjects.set('genericButton_' + i , new Button(new ValuePair(x,60),60,60,10,color,colors.buttonActive,'/img/placeholder.svg'));
 		}
