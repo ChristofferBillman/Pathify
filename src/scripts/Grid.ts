@@ -2,7 +2,7 @@ import Square from './Square'
 import UI from './UI';
 import ValuePair from './ValuePair'
 
-module Grid {
+namespace Grid {
 	let grid: Square.Square[][];
 	let squareSize: number = 50;
 	let gap: number = 5;
@@ -28,7 +28,7 @@ module Grid {
 		for(let x = 0; x < width; x = x + squareSize+gap){
 			grid[i] = [];
 			for(let y = 0; y < height; y = y + squareSize+gap){
-				grid[i][j] = new Square.Square(squareSize, new ValuePair(x,y));
+				grid[i][j] = new Square.Square(squareSize, new ValuePair(x,y),new ValuePair(i,j));
 				j++;
 			}
 			j = 0;
@@ -44,6 +44,7 @@ module Grid {
 				grid[i][j].unsetGoal();
 			}
 		}
+		console.log("unsetting goals")
 	}
 	export function unsetStarts(){
 		for(let i = 0; i < grid.length; i++){
@@ -51,6 +52,7 @@ module Grid {
 				grid[i][j].unsetStart();
 			}
 		}
+		console.log("unsetting starts")
 	}
 }
 
