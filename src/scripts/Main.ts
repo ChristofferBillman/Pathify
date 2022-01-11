@@ -2,13 +2,16 @@ import Square from './Square'
 import Input from './Input'
 import UI from './UI'
 import Debug from './Debug'
+//import ValuePair from './ValuePair'
 //import StupidPathfinder from './StupidPathfinder';
 import Grid from './Grid';
+//import Data from './Data';
+//import Astar from './Astar';
 /*
  * TODO: * Write TSDoc.
  */
 
-module Main {
+namespace Main {
 	let ctx: CanvasRenderingContext2D;
 	let canvas: HTMLCanvasElement;
 
@@ -38,7 +41,6 @@ module Main {
 		grid = Grid.init(width,height);
 		Input.init(canvas,grid);
 
-		/*let spf: StupidPathfinder =*/ //new StupidPathfinder(grid);
 		loop()
 	}
 	/**
@@ -47,12 +49,40 @@ module Main {
 	function loop(){
 		draw();
 		Grid.onframe();
-		UI.onframe(width,height);
+		UI.onframe();
 		Debug.calculatePerformance();
 		Debug.draw(width, grid.length * grid[0].length,ctx);
 		window.requestAnimationFrame(loop);
 	}
+	/*
+	function fillGraph(): Data.Graph<ValuePair>{
+		let graph: Data.Graph<ValuePair> = new Data.Graph<ValuePair>();
 
+		for(let i = 0; i < grid.length; i++){
+			for(let j = 0; j < grid[i].length; j++){
+				graph.AddVertex(new ValuePair(i,j))
+			}
+		}
+		for(let i = 0; i < grid.length; i++){
+			for(let j = 0; j < grid[i].length; j++){
+
+				let currentNode = graph.Get(new ValuePair(i,j));
+
+				for(let k = 0; k < 2; k++){
+					for(let l = 0; l < 2; l++){
+						if(k === 0 && l === 0) continue;
+						if(Grid.isInGrid(new ValuePair(i+k,j+l))) continue;
+						
+						let neighbor = graph.Get(new ValuePair(i + k, j + l));
+						graph.InsertEdge(currentNode, neighbor);
+					}
+				}
+			}
+		}
+
+		return graph;
+	}
+	*/
 	/**
 	 * Draws on the canvas. Only to be used inside loop().
 	 */
