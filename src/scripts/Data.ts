@@ -34,14 +34,6 @@ namespace Data{
             }
             return this.arr[i]
         }
-		GetWithIdentifier(identifier: Type): Type{
-			for(let i = 0; i < this.arr.length; i++){
-				if(JSON.stringify(this.arr[i]) === JSON.stringify(identifier)){
-					return this.arr[i];
-				}
-			}
-			throw new RangeError('The given identifier does not correspond to any nodes.')
-		}
 		RemoveWithInstance(inst: Type){
 			let i = 0;
             try{
@@ -69,16 +61,16 @@ namespace Data{
 	// Graph is implemeted as list.
 	export class Graph<Type> {
 
-        graph: List<Node<Type>>;
+        nodeList: List<Vertex<Type>>;
 
 		constructor(){
-			this.graph = new List<Node<Type>>();
+			this.nodeList = new List<Vertex<Type>>();
 		}
-        InsertEdge(n1: Node<Type>, n2: Node<Type>){
+        InsertEdge(n1: Vertex<Type>, n2: Vertex<Type>){
 			n2.connections.AppendLast(n1);
 			n1.connections.AppendLast(n2);
 		}
-		RemoveEdge(n1: Node<Type>,n2: Node<Type>){
+		RemoveEdge(n1: Vertex<Type>,n2: Vertex<Type>){
 			// The conditions in the loops here might not be correct.
 			let i = 0;
 			while(n1.connections.Get(i).toString() !== n2.toString()){
@@ -93,19 +85,19 @@ namespace Data{
 			n2.connections.Remove(i);
 		}
         AddVertex(content: Type){
-            this.graph.AppendLast(new Node<Type>(content));
+            this.nodeList.AppendLast(new Vertex<Type>(content));
         }
-        RemoveVertex(n: Node<Type>){
-            this.graph.RemoveWithInstance(n);
+        RemoveVertex(n: Vertex<Type>){
+            this.nodeList.RemoveWithInstance(n);
         }
-		Get(identifier: Type): Node<Type>{
-			return this.graph.GetWithIdentifier(new Node(identifier));
+		Get(identifier: number): Vertex<Type>{
+			return this.nodeList.Get(identifier);
 		}
 	}
-	export class Node<Type>{
+	export class Vertex<Type>{
 		
 		public contains: Type;
-		public connections: List<Node<Type>> = new List<Node<Type>>();
+		public connections: List<Vertex<Type>> = new List<Vertex<Type>>();
 
         constructor(content: Type){
             this.contains = content;
