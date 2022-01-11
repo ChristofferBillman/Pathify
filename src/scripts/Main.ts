@@ -2,10 +2,10 @@ import Square from './Square'
 import Input from './Input'
 import UI from './UI'
 import Debug from './Debug'
-//import ValuePair from './ValuePair'
+import ValuePair from './ValuePair'
 //import StupidPathfinder from './StupidPathfinder';
 import Grid from './Grid';
-//import Data from './Data';
+import Data from './Data';
 //import Astar from './Astar';
 /*
  * TODO: * Write TSDoc.
@@ -39,6 +39,12 @@ namespace Main {
 		let UIObjects: Map<String, UI.UIObject> = UI.init(ctx)
 		Square.init(ctx,UIObjects);
 		grid = Grid.init(width,height);
+
+		// Init graph
+		let graph: Data.Graph<ValuePair> = fillGraph();
+		console.log(graph);
+
+		graph.Get(posToIndex(2,2));
 		Input.init(canvas,grid);
 
 		loop()
@@ -54,35 +60,41 @@ namespace Main {
 		Debug.draw(width, grid.length * grid[0].length,ctx);
 		window.requestAnimationFrame(loop);
 	}
-	/*
+	
 	function fillGraph(): Data.Graph<ValuePair>{
 		let graph: Data.Graph<ValuePair> = new Data.Graph<ValuePair>();
 
-		for(let i = 0; i < grid.length; i++){
-			for(let j = 0; j < grid[i].length; j++){
+		// Create all vertices in graph based on our visual grid.
+		for(let j = 0; j < grid.length; j++){
+			for(let i = 0; i < grid[i].length; i++){
 				graph.AddVertex(new ValuePair(i,j))
 			}
 		}
-		for(let i = 0; i < grid.length; i++){
-			for(let j = 0; j < grid[i].length; j++){
 
-				let currentNode = graph.Get(new ValuePair(i,j));
+		// Connect all adjacent vertices (diagonal allowed).
+		for(let j = 0; j < grid.length; j++){
+			for(let i = 0; i < grid[j].length; i++){
+				let currentNode = graph.Get(posToIndex(i,j));
+				
+				console.log('Vertex: (' + i + ',' + j + ')')
+				for(let dj = -1; dj < 2; dj++){
+					for(let di = -1; di < 2; di++){
+						if(di === 0 && dj === 0) continue;
+						if(!Grid.isInGrid(new ValuePair(i+di,j+dj))) continue;
 
-				for(let k = 0; k < 2; k++){
-					for(let l = 0; l < 2; l++){
-						if(k === 0 && l === 0) continue;
-						if(Grid.isInGrid(new ValuePair(i+k,j+l))) continue;
-						
-						let neighbor = graph.Get(new ValuePair(i + k, j + l));
+						console.log('Neighbor: (' + (i+di) + ',' + (j+dj) + ')')
+						let neighbor = graph.Get(posToIndex(i + di, j + dj));
 						graph.InsertEdge(currentNode, neighbor);
 					}
 				}
 			}
 		}
-
 		return graph;
 	}
-	*/
+	function posToIndex(i: number,j: number){
+		return grid[0].length * j + i
+	}
+	
 	/**
 	 * Draws on the canvas. Only to be used inside loop().
 	 */
