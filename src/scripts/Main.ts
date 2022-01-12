@@ -3,10 +3,8 @@ import Input from './Input'
 import UI from './UI'
 import Debug from './Debug'
 import ValuePair from './ValuePair'
-//import StupidPathfinder from './StupidPathfinder';
 import Grid from './Grid';
 import Data from './Data';
-//import Astar from './Astar';
 /*
  * TODO: * Write TSDoc.
  */
@@ -76,11 +74,14 @@ namespace Main {
 			for(let i = 0; i < grid[j].length; i++){
 				let currentNode = graph.Get(posToIndex(i,j));
 				
+				// Get all 'surrounding' vertices.
 				for(let dj = -1; dj < 2; dj++){
 					for(let di = -1; di < 2; di++){
+						// Self is not considered a neighbor.
 						if(di === 0 && dj === 0) continue;
+						// Makes sure that we don't add a neighbor that does not exist.
 						if(!Grid.isInGrid(new ValuePair(i+di,j+dj))) continue;
-
+						
 						let neighbor = graph.Get(posToIndex(i + di, j + dj));
 						graph.InsertEdge(currentNode, neighbor);
 					}
@@ -89,6 +90,12 @@ namespace Main {
 		}
 		return graph;
 	}
+	/**
+	 * Converts a grid position to the unique identifer for the vertex at that position.
+	 * @param i 
+	 * @param j 
+	 * @returns 
+	 */
 	function posToIndex(i: number,j: number){
 		return grid[0].length * j + i
 	}
