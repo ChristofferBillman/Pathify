@@ -13,12 +13,11 @@ namespace Grid {
 	}
 
 	export function onframe(){
-		for(let i = 0; i < grid.length; i++){
-			for(let j = 0; j < grid[i].length; j++){
-				grid[i][j].onframe((UI.UIObjects.get('eraseButton') as UI.Button)!.pressed);
-			}
-		}
+		forEach((i:number,j:number) => {
+			grid[j][i].onframe((UI.UIObjects.get('eraseButton') as UI.Button)!.pressed);
+		})
 	}
+	// This function right here really needs to be sorted out.
 	export function makeGrid(width: number, height: number, squareSize: number, gap: number){
 		let i: number = 0;
 		let j: number = 0;
@@ -39,16 +38,19 @@ namespace Grid {
 		return pos.x < grid[0].length && pos.x >= 0 && pos.y < grid.length && pos.y >= 0;
 	}
 	export function unsetGoals(){
-		for(let i = 0; i < grid.length; i++){
-			for(let j = 0; j < grid[i].length; j++){
-				grid[i][j].unsetGoal();
-			}
-		}
+		forEach((i:number,j:number) => {
+			grid[j][i].unsetGoal();
+		})
 	}
 	export function unsetStarts(){
-		for(let i = 0; i < grid.length; i++){
-			for(let j = 0; j < grid[i].length; j++){
-				grid[i][j].unsetStart();
+		forEach((i:number,j:number) => {
+			grid[j][i].unsetStart();
+		})
+	}
+	export function forEach(func: ((i:number, j:number) => void)){
+		for(let j = 0; j < grid.length; j++){
+			for(let i = 0; i < grid[j].length; i++){
+				func(i,j);
 			}
 		}
 	}

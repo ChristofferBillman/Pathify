@@ -59,35 +59,33 @@ namespace Main {
 		window.requestAnimationFrame(loop);
 	}
 	
+	// Run this function every time "run-button" is pressed. Don't continuiously update the graph,
+	// update it when grid editing is finished.
 	function fillGraph(): Data.Graph<ValuePair>{
 		let graph: Data.Graph<ValuePair> = new Data.Graph<ValuePair>();
 
 		// Create all vertices in graph based on our visual grid.
-		for(let j = 0; j < grid.length; j++){
-			for(let i = 0; i < grid[i].length; i++){
-				graph.AddVertex(new ValuePair(i,j))
-			}
-		}
+		Grid.forEach((i:number, j:number) => {
+			graph.AddVertex(new ValuePair(i,j));
+		})
 
 		// Connect all adjacent vertices (diagonal allowed).
-		for(let j = 0; j < grid.length; j++){
-			for(let i = 0; i < grid[j].length; i++){
-				let currentNode = graph.Get(posToIndex(i,j));
+		Grid.forEach((i: number, j:number) => {
+			let currentNode = graph.Get(posToIndex(i,j));
 				
-				// Get all 'surrounding' vertices.
-				for(let dj = -1; dj < 2; dj++){
-					for(let di = -1; di < 2; di++){
-						// Self is not considered a neighbor.
-						if(di === 0 && dj === 0) continue;
-						// Makes sure that we don't add a neighbor that does not exist.
-						if(!Grid.isInGrid(new ValuePair(i+di,j+dj))) continue;
-						
-						let neighbor = graph.Get(posToIndex(i + di, j + dj));
-						graph.InsertEdge(currentNode, neighbor);
-					}
+			// Get all 'surrounding' vertices.
+			for(let dj = -1; dj < 2; dj++){
+				for(let di = -1; di < 2; di++){
+					// Self is not considered a neighbor.
+					if(di === 0 && dj === 0) continue;
+					// Makes sure that we don't add a neighbor that does not exist.
+					if(!Grid.isInGrid(new ValuePair(i+di,j+dj))) continue;
+					
+					let neighbor = graph.Get(posToIndex(i + di, j + dj));
+					graph.InsertEdge(currentNode, neighbor);
 				}
 			}
-		}
+		})
 		return graph;
 	}
 	/**
