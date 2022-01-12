@@ -44,3 +44,11 @@ Goals for the next session:
 -   Lift out the code checking that we don't try to read/write outside the grid into a seperate function. It should be called before accessing any value in the grid.
 -   Make it possible to mark squares as goal or start.
 -   If I have time, begin implementing A\*.
+
+### 2022-01-12
+
+Happy new year! I have not been able to work on this during the holidays due to school. Hopefully I should be more active in the future.
+
+As per usual, I changed my mind again. A Graph datatype has been implemented and the pathfinding algorithms will traverse and work with the graph. In every iteration of the algorithm, the graph will be translated and drawn onto the grid. All information needed is stil not encompassed in the graph, so the next step will be to fully complete the graph such that it can function independently of the grid. What I want to achieve as much separation of the data and algorithms from the visual side of things (canvas, drawing, animation, etc.). Also, the fillGraph metod will have to be modified to take into account if a square is an obstacle or not and if the square is a goal or a start.
+
+I have removed the Astar class and algorithm from before, as that implementation was flawed, and does not work on graphs.
