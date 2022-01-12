@@ -44,7 +44,7 @@ namespace Main {
 		let graph: Data.Graph<ValuePair> = fillGraph();
 		console.log(graph);
 
-		graph.Get(posToIndex(2,2));
+		console.log(graph.Get(posToIndex(2,2)));
 		Input.init(canvas,grid);
 
 		loop()
@@ -76,13 +76,11 @@ namespace Main {
 			for(let i = 0; i < grid[j].length; i++){
 				let currentNode = graph.Get(posToIndex(i,j));
 				
-				console.log('Vertex: (' + i + ',' + j + ')')
 				for(let dj = -1; dj < 2; dj++){
 					for(let di = -1; di < 2; di++){
 						if(di === 0 && dj === 0) continue;
 						if(!Grid.isInGrid(new ValuePair(i+di,j+dj))) continue;
 
-						console.log('Neighbor: (' + (i+di) + ',' + (j+dj) + ')')
 						let neighbor = graph.Get(posToIndex(i + di, j + dj));
 						graph.InsertEdge(currentNode, neighbor);
 					}
