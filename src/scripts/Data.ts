@@ -67,7 +67,7 @@ namespace Data{
 			this.nodeList = new List<Vertex<Type>>();
 		}
         InsertEdge(n1: Vertex<Type>, n2: Vertex<Type>){
-			n2.connections.AppendLast(n1);
+			//n2.connections.AppendLast(n1);
 			n1.connections.AppendLast(n2);
 		}
 		RemoveEdge(n1: Vertex<Type>,n2: Vertex<Type>){
