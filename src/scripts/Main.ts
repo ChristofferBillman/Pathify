@@ -2,18 +2,19 @@ import Square from './Square'
 import Input from './Input'
 import UI from './UI'
 import Debug from './Debug'
-import StupidPathfinder from './StupidPathfinder';
+import ValuePair from './ValuePair'
+import Grid from './Grid';
+import Data from './Data';
 /*
  * TODO: * Write TSDoc.
  */
 
-module Main {
+namespace Main {
 	let ctx: CanvasRenderingContext2D;
 	let canvas: HTMLCanvasElement;
 
-	let squares: Square.Square[][] = [];
+	let grid: Square.Square[][];
 
-	let squareSize: number = 50;
 	let width!: number;
 	let height!: number;
 
@@ -31,14 +32,19 @@ module Main {
 
 		ctx = canvas.getContext('2d')!;
 
+		setCanvasSize();
+
 		let UIObjects: Map<String, UI.UIObject> = UI.init(ctx)
-
-		setCanvasSize()
 		Square.init(ctx,UIObjects);
-		squares = Square.setSquares(width,height,squareSize,5)
-		Input.init(canvas,squares)
+		grid = Grid.init(width,height);
 
-		/*let spf: StupidPathfinder =*/ new StupidPathfinder(squares);
+		// Init graph
+		let graph: Data.Graph<ValuePair> = fillGraph();
+		console.log(graph);
+
+		console.log(graph.Get(posToIndex(2,2)));
+		Input.init(canvas,grid);
+
 		loop()
 	}
 	/**
@@ -46,18 +52,54 @@ module Main {
 	 */
 	function loop(){
 		draw();
-		for(let i = 0; i < squares.length; i++){
-			for(let j = 0; j < squares[i].length; j++){
-				squares[i][j].onframe((UI.UIObjects.get('eraseButton') as UI.Button)!.pressed);
+		Grid.onframe();
+		UI.onframe();
+		Debug.calculatePerformance();
+		Debug.draw(width, grid.length * grid[0].length,ctx);
+		window.requestAnimationFrame(loop);
+	}
+	
+	function fillGraph(): Data.Graph<ValuePair>{
+		let graph: Data.Graph<ValuePair> = new Data.Graph<ValuePair>();
+
+		// Create all vertices in graph based on our visual grid.
+		for(let j = 0; j < grid.length; j++){
+			for(let i = 0; i < grid[i].length; i++){
+				graph.AddVertex(new ValuePair(i,j))
 			}
 		}
 
-		UI.onframe(width,height);
-		Debug.calculatePerformance();
-		Debug.draw(width, squares.length,ctx);
-		window.requestAnimationFrame(loop);
+		// Connect all adjacent vertices (diagonal allowed).
+		for(let j = 0; j < grid.length; j++){
+			for(let i = 0; i < grid[j].length; i++){
+				let currentNode = graph.Get(posToIndex(i,j));
+				
+				// Get all 'surrounding' vertices.
+				for(let dj = -1; dj < 2; dj++){
+					for(let di = -1; di < 2; di++){
+						// Self is not considered a neighbor.
+						if(di === 0 && dj === 0) continue;
+						// Makes sure that we don't add a neighbor that does not exist.
+						if(!Grid.isInGrid(new ValuePair(i+di,j+dj))) continue;
+						
+						let neighbor = graph.Get(posToIndex(i + di, j + dj));
+						graph.InsertEdge(currentNode, neighbor);
+					}
+				}
+			}
+		}
+		return graph;
 	}
-
+	/**
+	 * Converts a grid position to the unique identifer for the vertex at that position.
+	 * @param i 
+	 * @param j 
+	 * @returns 
+	 */
+	function posToIndex(i: number,j: number){
+		return grid[0].length * j + i
+	}
+	
 	/**
 	 * Draws on the canvas. Only to be used inside loop().
 	 */
@@ -71,7 +113,7 @@ module Main {
 	 */
 	function onResize(){
 		setCanvasSize();
-		squares = Square.setSquares(width,height,squareSize,5)
+		grid = Grid.init(width,height);
 	}
 	/**
 	 * Sets the size of the canvas.

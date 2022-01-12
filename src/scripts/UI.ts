@@ -6,11 +6,12 @@ import Color from "./Color";
 export const colors = {
 	hover: new Color(165,143,204),
 	selected: new Color(119,63,217),
-	visited: new Color(227, 180, 11),
+	visited: new Color(227, 97, 11),
 	default: new Color(255,255,255),
 	buttonColor: new Color(63,204,217),
-	buttonActive: new Color(58,123,207),
-	invisible: new Color(255,255,255,0)
+	buttonActive: new Color(119,63,217),
+	invisible: new Color(255,255,255,0),
+	evaluated: new Color(227, 180, 11)
 }
 
 /**
@@ -288,8 +289,8 @@ module UI{
 			this.scalingTween = new Tween(1,1.2,15,true,'easeoutback')
 			this.translationTween = new Tween(0,1,15,true,'easeoutback')
 			this.mouseDownTween = new Tween(1,1.1,10,true,'easeinout')
-			let hoverColor = new Color(this.defaultColor.r + 10,this.defaultColor.g + 10,this.defaultColor.b + 10)
-			this.colorTween = new ColorTween(this.defaultColor, hoverColor,15,true,'easeinout')
+			let hoverColor = new Color(this.defaultColor.r,this.defaultColor.g,this.defaultColor.b)
+			this.colorTween = new ColorTween(new Color(200,200,200), hoverColor,15,true,'easeinout')
 		}
 	
 		public onframe(): void{
@@ -300,6 +301,8 @@ module UI{
 	
 		public onclick():void {
 			if(Input.wasClicked(this.pos, new ValuePair(this.pos.x + this.width, this.pos.y + this.height))){
+				unpressAll()
+
 				if(this.pressed === false) this.pressed = true;
 				else this.pressed = false;
 			}
@@ -357,7 +360,7 @@ module UI{
 			return this.pressed
 		}
 	}
-	class Menu implements UIObject{
+	export class Menu implements UIObject{
 		dim: ValuePair;
 		pos: ValuePair;
 
@@ -384,17 +387,8 @@ module UI{
 		onclick(): void {
 		}
 	}
-	/*class SetGoalButton extends Button{
 
-		public onclick(): void {
-			if(Input.wasClicked(this.pos, new ValuePair(this.pos.x + this.width, this.pos.y + this.height))){
-				if(this.pressed === false) this.pressed = true;
-				else this.pressed = false;
-			}
-		}
-	}*/
-
-	export function onframe(width: number, height: number){
+	export function onframe(){
 
 		UIObjects.forEach(UIObject=>{
 			// Draws the object on the canvas and does all logic and animation.
@@ -416,15 +410,24 @@ module UI{
 			new ValuePair(650,80)
 			))
 
-		UIObjects.set('eraseButton', new Button(
+		UIObjects.set('paintButton', new Button(
 			new ValuePair(60,60),
 			60,60,
 			10,
 			colors.buttonColor,
-			colors.buttonActive
+			colors.buttonActive,
+			'/img/brush.svg'
+			));
+		UIObjects.set('eraseButton', new Button(
+			new ValuePair(60*2+10,60),
+			60,60,
+			10,
+			colors.buttonColor,
+			colors.buttonActive,
+			'/img/cross.svg'
 			));
 		UIObjects.set('setGoalButton', new Button(
-			new ValuePair(60*2+10,60),
+			new ValuePair(60*3+20,60),
 			60,60,
 			10,
 			colors.buttonColor,
@@ -432,19 +435,35 @@ module UI{
 			'/img/goal.svg'
 			));
 		UIObjects.set('setStartButton', new Button(
-			new ValuePair(60*3+20,60),
+			new ValuePair(60*4+30,60),
 			60,60,
 			10,
 			colors.buttonColor,
-			colors.buttonActive
+			colors.buttonActive,
+			'/img/start.svg'
+			));
+		UIObjects.set('startSearch', new Button(
+			new ValuePair(60*5+40,60),
+			60,60,
+			10,
+			colors.buttonColor,
+			colors.buttonActive,
+			'/img/placeholder.svg'
 			));
 		let color = new Color(119,63,217)
-		for(let i = 0; i < 5 ; i++){
-			let x = 70 * 5-10 + (i * 70)
+		for(let i = 0; i < 3 ; i++){
+			let x = 70 * 7-10 + (i * 70)
 			color.r = color.r + i * 20
-			UIObjects.set('genericButton_' + i , new Button(new ValuePair(x,60),60,60,10,color,colors.buttonActive));
+			UIObjects.set('genericButton_' + i , new Button(new ValuePair(x,60),60,60,10,color,colors.buttonActive,'/img/placeholder.svg'));
 		}
 		return UIObjects;
+	}
+	function unpressAll(){
+		UIObjects.forEach(object =>{
+			if(object instanceof Button){
+				object.pressed = false;
+			}
+		})
 	}
 }
 export default UI;
