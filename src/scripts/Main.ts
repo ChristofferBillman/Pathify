@@ -10,8 +10,6 @@ import Data from './Data';
  */
 
 namespace Main {
-	let ctx: CanvasRenderingContext2D;
-	let canvas: HTMLCanvasElement;
 
 	let grid: Square.Square[][];
 
@@ -24,26 +22,24 @@ namespace Main {
 	 * Inits the canvas.
 	 */
 	export function init(){
-		canvas = document.getElementsByTagName('canvas')[0]
 
-		if (!canvas.getContext) {
-			console.log('Canvas is not supported.')
+		window.canvas = document.getElementsByTagName('canvas')[0];
+		window.ctx = window.canvas.getContext('2d')!;
+
+		if (!window.canvas.getContext) {
+			console.log('canvas is not supported.')
 		}
-
-		ctx = canvas.getContext('2d')!;
 
 		setCanvasSize();
 
-		let UIObjects: Map<String, UI.UIObject> = UI.init(ctx)
-		Square.init(ctx,UIObjects);
+		UI.init();
 		grid = Grid.init(width,height);
 
 		// Init graph
 		let graph: Data.Graph<ValuePair> = fillGraph();
 		console.log(graph);
 
-		console.log(graph.Get(posToIndex(2,2)));
-		Input.init(canvas,grid);
+		Input.init(grid);
 
 		loop()
 	}
@@ -55,7 +51,7 @@ namespace Main {
 		Grid.onframe();
 		UI.onframe();
 		Debug.calculatePerformance();
-		Debug.draw(width, grid.length * grid[0].length,ctx);
+		Debug.draw(width, grid.length * grid[0].length);
 		window.requestAnimationFrame(loop);
 	}
 	
@@ -102,9 +98,9 @@ namespace Main {
 	 * Draws on the canvas. Only to be used inside loop().
 	 */
 	function draw(){
-		ctx.fillStyle = '#f7f7f7';
-		ctx.fillRect(0,0,width,height);
-		ctx.fillStyle = '#ffffff';
+		window.ctx.fillStyle = '#f7f7f7';
+		window.ctx.fillRect(0,0,width,height);
+		window.ctx.fillStyle = '#ffffff';
 	}
 	/**
 	 * Recalcalates the size of the canvas and the amount of squares in it.
@@ -117,10 +113,10 @@ namespace Main {
 	 * Sets the size of the canvas.
 	 */
 	function setCanvasSize(){
-		ctx.canvas.width  = window.innerWidth;
-		ctx.canvas.height = window.innerHeight;
-		width = ctx.canvas.width;
-		height = ctx.canvas.height;
+		window.ctx.canvas.width  = window.innerWidth;
+		window.ctx.canvas.height = window.innerHeight;
+		width = window.ctx.canvas.width;
+		height = window.ctx.canvas.height;
 	}
 }
 export default Main;

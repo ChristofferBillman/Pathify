@@ -3,176 +3,175 @@ import ValuePair from "./ValuePair";
 import Input from './Input';
 import Color from "./Color";
 
-export const colors = {
-	hover: new Color(165,143,204),
-	selected: new Color(119,63,217),
-	visited: new Color(227, 97, 11),
-	default: new Color(255,255,255),
-	buttonColor: new Color(63,204,217),
-	buttonActive: new Color(119,63,217),
-	invisible: new Color(255,255,255,0),
-	evaluated: new Color(227, 180, 11)
-}
+namespace UI{
 
-/**
- *	Handles tweening of values.
- */
-export class Tween {
-	interrupted: boolean = true;
-	tweenBack: boolean;
-	from: number;
-	to: number;
-	interval: number;
-	count: number = 0;
-	animationLength: number;
-	x: number;
-	dx: number;
-	timingFunc!: Function;
+	export const colors = {
+		hover: new Color(165,143,204),
+		selected: new Color(119,63,217),
+		visited: new Color(227, 97, 11),
+		default: new Color(255,255,255),
+		buttonColor: new Color(63,204,217),
+		buttonActive: new Color(119,63,217),
+		invisible: new Color(255,255,255,0),
+		evaluated: new Color(227, 180, 11)
+	}
 
 	/**
-	 * Handles tweeing from a value to another.
-	 * @param from Value to start tween from.
-	 * @param to Value to end tween on.
-	 * @param animationLength The length of the tween, in frames.
-	 * @param tweenBack Defines whether or not the animation should 'tween back' to the 'from' value when interrupted.
-	 * @param timingFunc Function that defines how to interpolate the values returned by tween().
-	 */
-	constructor(from: number, to: number,animationLength: number, tweenBack: boolean, timingFunc: string | ((x:number) => number)){
-		this.from = from;
-		this.to = to;
-		this.animationLength = animationLength;
-		this.tweenBack = tweenBack;
+	 *	Handles tweening of values.
+	*/
+	export class Tween {
+		interrupted: boolean = true;
+		tweenBack: boolean;
+		from: number;
+		to: number;
+		interval: number;
+		count: number = 0;
+		animationLength: number;
+		x: number;
+		dx: number;
+		timingFunc!: Function;
 
-		this.x = 1/animationLength; // Only inital value, will increment when tween() is called.
-		this.dx = 1/animationLength; // Will never change.
-		this.interval = to - from;
+		/**
+		 * Handles tweeing from a value to another.
+		 * @param from Value to start tween from.
+		 * @param to Value to end tween on.
+		 * @param animationLength The length of the tween, in frames.
+		 * @param tweenBack Defines whether or not the animation should 'tween back' to the 'from' value when interrupted.
+		 * @param timingFunc Function that defines how to interpolate the values returned by tween().
+		 */
+		constructor(from: number, to: number,animationLength: number, tweenBack: boolean, timingFunc: string | ((x:number) => number)){
+			this.from = from;
+			this.to = to;
+			this.animationLength = animationLength;
+			this.tweenBack = tweenBack;
 
-		if(typeof(timingFunc) === 'string'){
-			switch(timingFunc){
-				case 'easeinout':
-					this.timingFunc = (x: number):number => {
-						return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
-					}
-					break;
-				case 'easeoutback':
-					this.timingFunc = (x: number):number => {
-						const c1 = 1.70158;
-						const c3 = c1 + 1;
+			this.x = 1/animationLength; // Only inital value, will increment when tween() is called.
+			this.dx = 1/animationLength; // Will never change.
+			this.interval = to - from;
 
-						return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
-					}
-					break;
-				default:
-					this.timingFunc = (x: number):number => {
-						return x;
-					}
-					break;
+			if(typeof(timingFunc) === 'string'){
+				switch(timingFunc){
+					case 'easeinout':
+						this.timingFunc = (x: number):number => {
+							return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+						}
+						break;
+					case 'easeoutback':
+						this.timingFunc = (x: number):number => {
+							const c1 = 1.70158;
+							const c3 = c1 + 1;
+
+							return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+						}
+						break;
+					default:
+						this.timingFunc = (x: number):number => {
+							return x;
+						}
+						break;
+				}
+			}
+			else{
+				this.timingFunc = timingFunc;
 			}
 		}
-		else{
-			this.timingFunc = timingFunc;
+		/**
+		 * Gets you the next value in the animation. Should be called each frame.
+		 * @returns The next value in the animation.
+		 */
+		tween(): number{
+			let computedValue: number
+			if(!this.interrupted && this.count < this.animationLength){
+				this.x = this.x + this.dx;
+				this.count++;
+				computedValue = this.timingFunc(this.x);
+				return (computedValue * this.interval) + this.from;
+			}
+			else if(this.tweenBack && this.count > 0){
+				this.x = this.x - this.dx;
+				this.count--;
+				computedValue = this.timingFunc(this.x);
+				return (computedValue * this.interval) + this.from;
+			} else if(this.tweenBack) {
+				return this.from;
+			}
+			else if(!this.tweenBack){
+				return this.to
+			}
+			return 0
+		}
+		/**
+		 * Resets the tween such that it can be tweened again.
+		 */
+		reset():void{
+			this.count = 0;
+			this.x = 1/this.animationLength; // Only inital value, will increment when tween() is called.
+			this.dx = 1/this.animationLength;
+		}
+		/**
+		 * Triggers the tweenback.
+		 * NOTE: Should only be called if tweenback was set to true in constructor.
+		 */
+		interrupt(): void{
+			this.interrupted = true;
+		}
+		/**
+		 * Starts the animation. Can be called each frame without disrupting the tween, though not necessary.
+		 */
+		start(): void{
+			this.interrupted = false;
 		}
 	}
 	/**
-	 * Gets you the next value in the animation. Should be called each frame.
-	 * @returns The next value in the animation.
+	 * Tweens between two rgba values.
 	 */
-	tween(): number{
-		let computedValue: number
-		if(!this.interrupted && this.count < this.animationLength){
-			this.x = this.x + this.dx;
-			this.count++;
-			computedValue = this.timingFunc(this.x);
-			return (computedValue * this.interval) + this.from;
+	export class ColorTween {
+
+		rt: Tween;
+		gt: Tween;
+		bt: Tween;
+		at: Tween;
+
+		from: Color;
+		to: Color;
+
+		constructor(from: Color, to: Color,animationLength: number, tweenBack: boolean, timingFunc: string | ((x:number) => number)){
+
+			this.from = from;
+			this.to = to;
+
+			this.rt = new Tween(this.from.r,this.to.r,animationLength,tweenBack,timingFunc)
+			this.gt = new Tween(this.from.g,this.to.g,animationLength,tweenBack,timingFunc)
+			this.bt = new Tween(this.from.b,this.to.b,animationLength,tweenBack,timingFunc)
+			this.at = new Tween(this.from.a,this.to.a,animationLength,tweenBack,timingFunc)
 		}
-		else if(this.tweenBack && this.count > 0){
-			this.x = this.x - this.dx;
-			this.count--;
-			computedValue = this.timingFunc(this.x);
-			return (computedValue * this.interval) + this.from;
-		} else if(this.tweenBack) {
-			return this.from;
+		tween(): Color{
+			return new Color(
+				this.rt.tween(),
+				this.gt.tween(),
+				this.bt.tween(),
+				this.at.tween()
+				)
 		}
-		else if(!this.tweenBack){
-			return this.to
+		start(){
+			this.rt.start();
+			this.gt.start();
+			this.bt.start();
+			this.at.start();
 		}
-		return 0
+		interrupt(){
+			this.rt.interrupt();
+			this.gt.interrupt();
+			this.bt.interrupt();
+			this.at.interrupt();
+		}
 	}
-	/**
-	 * Resets the tween such that it can be tweened again.
-	 */
-	reset():void{
-		this.count = 0;
-		this.x = 1/this.animationLength; // Only inital value, will increment when tween() is called.
-		this.dx = 1/this.animationLength;
-	}
-	/**
-	 * Triggers the tweenback.
-	 * NOTE: Should only be called if tweenback was set to true in constructor.
-	 */
-	interrupt(): void{
-		this.interrupted = true;
-	}
-	/**
-	 * Starts the animation. Can be called each frame without disrupting the tween, though not necessary.
-	 */
-	start(): void{
-		this.interrupted = false;
-	}
-}
-/**
- * Tweens between two rgba values.
- */
-export class ColorTween {
-
-	rt: Tween;
-	gt: Tween;
-	bt: Tween;
-	at: Tween;
-
-	from: Color;
-	to: Color;
-
-	constructor(from: Color, to: Color,animationLength: number, tweenBack: boolean, timingFunc: string | ((x:number) => number)){
-
-		this.from = from;
-		this.to = to;
-
-		this.rt = new Tween(this.from.r,this.to.r,animationLength,tweenBack,timingFunc)
-		this.gt = new Tween(this.from.g,this.to.g,animationLength,tweenBack,timingFunc)
-		this.bt = new Tween(this.from.b,this.to.b,animationLength,tweenBack,timingFunc)
-		this.at = new Tween(this.from.a,this.to.a,animationLength,tweenBack,timingFunc)
-	}
-	tween(): Color{
-		return new Color(
-			this.rt.tween(),
-			this.gt.tween(),
-			this.bt.tween(),
-			this.at.tween()
-			)
-	}
-	start(){
-		this.rt.start();
-		this.gt.start();
-		this.bt.start();
-		this.at.start();
-	}
-	interrupt(){
-		this.rt.interrupt();
-		this.gt.interrupt();
-		this.bt.interrupt();
-		this.at.interrupt();
-	}
-}
-
-module UI{
 
 	export interface UIObject{
 		onframe(): void;
 		onclick(): void;
 	}
 
-	let ctx: CanvasRenderingContext2D;
 	export const UIObjects: Map<String, UIObject> = new Map();
 
 	class Cursor implements UIObject{
@@ -240,12 +239,12 @@ module UI{
 			this.pos.y = this.lastGridPos.y - this.diffY * d
 		}
 		draw(){
-			ctx.fillStyle = colors.hover.getString()
+			window.ctx.fillStyle = colors.hover.getString()
 			if(this.overUI) {
-				ctx.fillStyle = colors.invisible.getString()
+				window.ctx.fillStyle = colors.invisible.getString()
 			}
 
-			Utils.drawRoundRect(this.pos.x,this.pos.y,this.size,this.size,this.borderRadius,ctx);
+			Utils.drawRoundRect(this.pos.x,this.pos.y,this.size,this.size,this.borderRadius,window.ctx);
 		}
 	}
 	
@@ -347,14 +346,14 @@ module UI{
 			this.pos.y =  this.defaultPos.y + -6 * tFactor * pScaling
 		}
 		private draw():void{
-			ctx.fillStyle = this.colorTween.tween().getString()
+			window.ctx.fillStyle = this.colorTween.tween().getString()
 
 			if(this.pressed){
-				ctx.fillStyle = this.pressedColor.getString()
+				window.ctx.fillStyle = this.pressedColor.getString()
 			}
 			
-			Utils.drawRoundRect(this.pos.x,this.pos.y,this.width,this.height,this.borderRadius,ctx)
-			if(this.image) ctx.drawImage(this.image,this.pos.x+10,this.pos.y+10,this.width-20,this.height-20);
+			Utils.drawRoundRect(this.pos.x,this.pos.y,this.width,this.height,this.borderRadius,window.ctx)
+			if(this.image) window.ctx.drawImage(this.image,this.pos.x+10,this.pos.y+10,this.width-20,this.height-20);
 		}
 		getState(){
 			return this.pressed
@@ -369,20 +368,20 @@ module UI{
 			this.dim = dimensions
 		}
 		onframe(): void {
-			ctx.shadowColor = "rgba(0,0,0,0.2)";
-			ctx.shadowBlur = 10;
-			ctx.shadowOffsetX = 0;
-			ctx.shadowOffsetY = 0;
-			ctx.fillStyle = '#ffffff';
+			window.ctx.shadowColor = "rgba(0,0,0,0.2)";
+			window.ctx.shadowBlur = 10;
+			window.ctx.shadowOffsetX = 0;
+			window.ctx.shadowOffsetY = 0;
+			window.ctx.fillStyle = '#ffffff';
 			Utils.drawRoundRect(
 				this.pos.x,
 				this.pos.y,
 				this.dim.x,
 				this.dim.y,
 				20,
-				ctx);
+				window.ctx);
 
-			ctx.shadowBlur = 0;
+			window.ctx.shadowBlur = 0;
 		}
 		onclick(): void {
 		}
@@ -395,8 +394,7 @@ module UI{
 			UIObject.onframe();
 		})
 	}
-	export function init(context: CanvasRenderingContext2D): Map<String, UIObject>{
-		ctx = context;
+	export function init() {
 
 		UIObjects.set('cursor', new Cursor(
 			50,
@@ -456,7 +454,6 @@ module UI{
 			color.r = color.r + i * 20
 			UIObjects.set('genericButton_' + i , new Button(new ValuePair(x,60),60,60,10,color,colors.buttonActive,'/img/placeholder.svg'));
 		}
-		return UIObjects;
 	}
 	function unpressAll(){
 		UIObjects.forEach(object =>{

@@ -1,4 +1,4 @@
-import Main from './scripts/Main'
+import Main from './scripts/Main';
 import React, { useEffect } from 'react';
 
 function Canvas(props: any) {

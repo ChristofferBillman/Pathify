@@ -20,16 +20,15 @@ module Debug {
 	 * Draws the performance statistics on the canvas.
 	 * @param width Width of the window.
 	 * @param numerOfSquares The number of squares currently being drawn on the canvas.
-	 * @param ctx The canvas context.
 	 */
-	export function draw(width: number, numerOfSquares: number, ctx: CanvasRenderingContext2D){
+	export function draw(width: number, numerOfSquares: number){
 		if(Input.pPressed()){
-			ctx.fillStyle = "rgba(0,0,0,0.5)";
-			Utils.drawRoundRect(width-260,20,250,100,10,ctx)
-			ctx.fillStyle = "#ffffff";
-			ctx.font = "20px Arial";
-			ctx.fillText("fps: " + fps as unknown as string,width-250,50)
-			ctx.fillText("number of squares: " + numerOfSquares as unknown as string,width-250,80)
+			window.ctx.fillStyle = "rgba(0,0,0,0.5)";
+			Utils.drawRoundRect(width-260,20,250,100,10,window.ctx)
+			window.ctx.fillStyle = "#ffffff";
+			window.ctx.font = "20px Arial";
+			window.ctx.fillText("fps: " + fps as unknown as string,width-250,50)
+			window.ctx.fillText("number of squares: " + numerOfSquares as unknown as string,width-250,80)
 		}
 	}
 }
